@@ -6,7 +6,7 @@ RED := \033[0;31m
 CYAN := \033[36m
 RESET := \033[0m
 
-CC := cc
+CC := gcc
 CFLAGS := -Wall -Werror -Wextra
 
 NAME := ft_ping
