@@ -11,7 +11,9 @@ CFLAGS := -Wall -Werror -Wextra
 
 NAME := ft_ping
 
-SRCS := src/main.c
+SRCS := src/main.c \
+		src/init.c \
+		src/resolve.c
 
 OBJS := $(SRCS:.c=.o)
 

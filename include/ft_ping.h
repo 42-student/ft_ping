@@ -1,10 +1,15 @@
 #ifndef FT_PING_H
 # define FT_PING_H
 
+# include <stdio.h>
 # include <stdlib.h>
+# include <string.h>
 # include <stdbool.h>
+# include <sys/types.h>
+# include <sys/socket.h>
 # include <arpa/inet.h>
 # include <netinet/in.h>
+# include <netdb.h>
 
 typedef struct s_options
 {
