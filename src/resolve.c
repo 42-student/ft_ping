@@ -8,16 +8,25 @@ int	resolve_destination(t_ping *ping)
 	memset(&hints, 0, sizeof(hints));
 
 	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_RAW;
+	hints.ai_protocol = IPPROTO_ICMP;
 
-	if (getaddrinfo(ping->destination.hostname, NULL, &hints, &result) != 0)
+	int ret = getaddrinfo(ping->destination.hostname, NULL, &hints, &result);
+
+	if (ret != 0)
 	{
-		fprintf(stderr, "Failed to resolve %s\n", ping->destination.hostname);
+		fprintf(stderr, "%s: %s\n", ping->destination.hostname, gai_strerror(ret));
 		return (1);
 	}
 
 	ping->destination.addr = *(struct sockaddr_in *)result->ai_addr;
 
-	inet_ntop(AF_INET, &ping->destination.addr.sin_addr, ping->destination.ip, sizeof(ping->destination.ip));
+	if(inet_ntop(AF_INET, &ping->destination.addr.sin_addr, ping->destination.ip, sizeof(ping->destination.ip)) == NULL)
+	{
+		fprintf(stderr, "inet_ntop: %s\n", strerror(errno));
+		freeaddrinfo(result);
+		return (1);
+	}
 
 	freeaddrinfo(result);
 
