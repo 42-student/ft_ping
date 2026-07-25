@@ -14,6 +14,9 @@ int	init_ping(t_ping *ping, int argc, char **argv)
 
 	if (resolve_destination(ping))
 		return (1);
-	
+
+	if (create_socket(ping))
+		return (1);
+
 	return (0);
 }

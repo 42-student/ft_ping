@@ -13,7 +13,8 @@ NAME := ft_ping
 
 SRCS := src/main.c \
 		src/init.c \
-		src/resolve.c
+		src/resolve.c \
+		src/socket.c
 
 OBJS := $(SRCS:.c=.o)
 

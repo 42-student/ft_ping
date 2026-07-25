@@ -21,9 +21,9 @@ int	resolve_destination(t_ping *ping)
 
 	ping->destination.addr = *(struct sockaddr_in *)result->ai_addr;
 
-	if(inet_ntop(AF_INET, &ping->destination.addr.sin_addr, ping->destination.ip, sizeof(ping->destination.ip)) == NULL)
+	if (inet_ntop(AF_INET, &ping->destination.addr.sin_addr, ping->destination.ip, sizeof(ping->destination.ip)) == NULL)
 	{
-		fprintf(stderr, "inet_ntop: %s\n", strerror(errno));
+		perror("inet_ntop");
 		freeaddrinfo(result);
 		return (1);
 	}

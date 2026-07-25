@@ -9,5 +9,10 @@ int	main(int argc, char **argv)
 
 	printf("PING %s (%s)\n", ping.destination.hostname, ping.destination.ip);
 
+	printf("Raw socket created successfully. fd: %d\n", ping.socket.fd);
+
+	if (ping.socket.is_open)
+		close(ping.socket.fd);
+
 	return (EXIT_SUCCESS);
 }

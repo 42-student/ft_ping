@@ -10,7 +10,13 @@
 # include <arpa/inet.h>
 # include <netinet/in.h>
 # include <netdb.h>
-# include <errno.h>
+# include <unistd.h>
+
+typedef struct s_socket
+{
+	int		fd;
+	bool	is_open;
+} t_socket;
 
 typedef struct s_options
 {
@@ -29,11 +35,11 @@ typedef struct s_ping
 {
 	t_options		options;
 	t_destination	destination;
-
-	int				sockfd;
+	t_socket		socket;
 }	t_ping;
 
 int	init_ping(t_ping *ping, int argc, char **argv);
 int	resolve_destination(t_ping *ping);
+int	create_socket(t_ping *ping);
 
 #endif
