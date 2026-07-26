@@ -3,8 +3,9 @@
 int	build_echo_request(t_ping *ping, unsigned char *buffer)
 {
 	struct icmphdr *icmp;
+	struct timeval tv;
 
-	memset(buffer, 0, 64);
+	memset(buffer, 0, PACKET_SIZE);
 
 	icmp = (struct icmphdr *)buffer;
 
@@ -13,14 +14,12 @@ int	build_echo_request(t_ping *ping, unsigned char *buffer)
 	icmp->un.echo.id = htons(getpid());
 	icmp->un.echo.sequence = htons(ping->packet.sequence);
 
-	/*
-		payload here
+	gettimeofday(&tv, NULL);
 
-		memcpy(buffer + sizeof(struct icmphdr), "ft_ping", 7);
-		// or we can store timestamps in here
-	*/
+	memcpy(buffer + sizeof(struct icmphdr), &tv, sizeof(tv));
 
-	icmp->checksum = checksum(buffer, 64);
+	icmp->checksum = 0;
+	icmp->checksum = calculate_checksum(buffer, PACKET_SIZE);
 
 	return (0);
 }

@@ -12,6 +12,10 @@
 # include <netdb.h>
 # include <unistd.h>
 # include <netinet/ip_icmp.h>
+# include <sys/time.h>
+
+# define PACKET_SIZE 64
+# define PAYLOAD_SIZE 56
 
 typedef struct s_options
 {
