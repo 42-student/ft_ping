@@ -47,9 +47,10 @@ typedef struct s_ping
 	t_packet		packet;
 }	t_ping;
 
-int	init_ping(t_ping *ping, int argc, char **argv);
-int	resolve_destination(t_ping *ping);
-int	create_socket(t_ping *ping);
-int	build_echo_request(t_ping *ping, unsigned char *buffer);
+int			init_ping(t_ping *ping, int argc, char **argv);
+int			resolve_destination(t_ping *ping);
+int			create_socket(t_ping *ping);
+int			build_echo_request(t_ping *ping, unsigned char *buffer);
+uint16_t	calculate_checksum(void *data, size_t len);
 
 #endif

@@ -14,7 +14,8 @@ NAME := ft_ping
 SRCS := src/main.c \
 		src/init.c \
 		src/resolve.c \
-		src/socket.c
+		src/socket.c \
+		src/checksum.c
 
 OBJS := $(SRCS:.c=.o)
 
