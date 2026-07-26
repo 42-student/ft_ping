@@ -11,6 +11,7 @@
 # include <netinet/in.h>
 # include <netdb.h>
 # include <unistd.h>
+# include <netinet/ip_icmp.h>
 
 typedef struct s_options
 {
@@ -33,8 +34,8 @@ typedef struct s_socket
 
 typedef struct s_packet
 {
-	uint16_t		sequence;
 	uint16_t		identifier;
+	uint16_t		sequence;
 	struct timeval	timestamp;
 } t_packet;
 
@@ -49,6 +50,6 @@ typedef struct s_ping
 int	init_ping(t_ping *ping, int argc, char **argv);
 int	resolve_destination(t_ping *ping);
 int	create_socket(t_ping *ping);
-int	build_echo_request(t_ping *ping, char *buffer);
+int	build_echo_request(t_ping *ping, unsigned char *buffer);
 
 #endif
