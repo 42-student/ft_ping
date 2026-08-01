@@ -16,7 +16,8 @@ SRCS := src/main.c \
 		src/resolve.c \
 		src/socket.c \
 		src/checksum.c \
-		src/send.c
+		src/send.c \
+		src/receive.c
 
 OBJS := $(SRCS:.c=.o)
 

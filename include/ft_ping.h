@@ -51,11 +51,23 @@ typedef struct s_ping
 	t_packet		packet;
 }	t_ping;
 
+typedef struct s_reply
+{
+	unsigned char		*buffer;
+	ssize_t				bytes_received;
+	struct iphdr		*ip;
+	struct icmphdr		*icmp;
+	struct sockaddr_in	sender;
+	struct timeval		timestamp;
+	
+}	t_reply;
+
 int			init_ping(t_ping *ping, int argc, char **argv);
 int			resolve_destination(t_ping *ping);
 int			create_socket(t_ping *ping);
 int			build_echo_request(t_ping *ping, unsigned char *buffer);
 uint16_t	calculate_checksum(void *data, size_t len);
 int			send_echo_request(t_ping *ping);
+int			receive_packet(t_ping *ping, t_reply *reply);
 
 #endif
