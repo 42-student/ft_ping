@@ -53,7 +53,7 @@ typedef struct s_ping
 
 typedef struct s_reply
 {
-	unsigned char		*buffer;
+	unsigned char		buffer[1500];
 	ssize_t				bytes_received;
 	struct iphdr		*ip;
 	struct icmphdr		*icmp;
@@ -69,5 +69,6 @@ int			build_echo_request(t_ping *ping, unsigned char *buffer);
 uint16_t	calculate_checksum(void *data, size_t len);
 int			send_echo_request(t_ping *ping);
 int			receive_packet(t_ping *ping, t_reply *reply);
+int			parse_packet(t_reply *reply);
 
 #endif
