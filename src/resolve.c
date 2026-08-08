@@ -4,6 +4,7 @@ int	resolve_destination(t_ping *ping)
 {
 	struct addrinfo hints;
 	struct addrinfo *result;
+	int ret;
 
 	memset(&hints, 0, sizeof(hints));
 
@@ -11,7 +12,7 @@ int	resolve_destination(t_ping *ping)
 	hints.ai_socktype = SOCK_RAW;
 	hints.ai_protocol = IPPROTO_ICMP;
 
-	int ret = getaddrinfo(ping->destination.hostname, NULL, &hints, &result);
+	ret = getaddrinfo(ping->destination.hostname, NULL, &hints, &result);
 
 	if (ret != 0)
 	{
