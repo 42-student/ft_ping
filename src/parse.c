@@ -2,7 +2,7 @@
 
 int	parse_packet(t_reply *reply)
 {
-	size_t iph_size;
+	ssize_t iph_size;
 
 	if (reply->bytes_received < 20)
 	{

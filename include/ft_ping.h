@@ -13,6 +13,8 @@
 # include <unistd.h>
 # include <netinet/ip_icmp.h>
 # include <sys/time.h>
+# include <stdint.h>
+# include <inttypes.h>
 
 # define PACKET_SIZE 64
 # define PAYLOAD_SIZE 56
@@ -71,5 +73,6 @@ int			send_echo_request(t_ping *ping);
 int			receive_packet(t_ping *ping, t_reply *reply);
 int			parse_packet(t_reply *reply);
 int			validate_reply(t_ping *ping, t_reply *reply);
+int			ping_once(t_ping *ping, t_reply *reply);
 
 #endif

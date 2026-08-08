@@ -17,9 +17,11 @@ SRCS := src/main.c \
 		src/socket.c \
 		src/checksum.c \
 		src/send.c \
+		src/packet.c \
 		src/receive.c \
 		src/parse.c \
-		src/validate_reply.c
+		src/validate_reply.c \
+		src/ping.c
 
 OBJS := $(SRCS:.c=.o)
 

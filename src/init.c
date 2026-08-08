@@ -12,6 +12,7 @@ int	init_ping(t_ping *ping, int argc, char **argv)
 
 	ping->destination.hostname = argv[1];
 	ping->packet.identifier = getpid();
+	ping->packet.sequence = 1;
 
 	if (resolve_destination(ping))
 		return (1);
