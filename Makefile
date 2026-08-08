@@ -18,7 +18,8 @@ SRCS := src/main.c \
 		src/checksum.c \
 		src/send.c \
 		src/receive.c \
-		src/parse.c
+		src/parse.c \
+		src/validate_reply.c
 
 OBJS := $(SRCS:.c=.o)
 

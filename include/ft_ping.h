@@ -70,5 +70,6 @@ uint16_t	calculate_checksum(void *data, size_t len);
 int			send_echo_request(t_ping *ping);
 int			receive_packet(t_ping *ping, t_reply *reply);
 int			parse_packet(t_reply *reply);
+int			validate_reply(t_ping *ping, t_reply *reply);
 
 #endif
