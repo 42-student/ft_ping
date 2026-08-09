@@ -8,20 +8,32 @@ int	main(int argc, char **argv)
 	if (init_ping(&ping, argc, argv))
 		return (EXIT_FAILURE);
 
-	printf("PING %s (%s)\n", ping.destination.hostname, ping.destination.ip);
+	print_header(&ping);
 
 	//printf("Raw socket created successfully. fd: %d\n", ping.socket.fd);
 
 	memset(&reply, 0, sizeof(reply));
 
-	if (ping_once(&ping, &reply))
+	while (1)
 	{
-		fprintf(stderr, "ping_once: failed\n");
-		return (EXIT_FAILURE);
+		if (ping_once(&ping, &reply))
+		{
+			fprintf(stderr, "ping_once: failed\n");
+			return (EXIT_FAILURE);
+		}
+
+		ping.packet.sequence++;
+
+		sleep(1);
 	}
 
 	if (ping.socket.is_open)
 		close(ping.socket.fd);
 
 	return (EXIT_SUCCESS);
+}
+
+void	print_header(t_ping *ping)
+{
+	printf("PING %s (%s) 56(84) bytes of data.\n", ping->destination.hostname, ping->destination.ip);
 }

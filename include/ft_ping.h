@@ -75,5 +75,6 @@ int			parse_packet(t_reply *reply);
 int			validate_reply(t_ping *ping, t_reply *reply);
 int			ping_once(t_ping *ping, t_reply *reply);
 void		print_reply(t_ping *ping, t_reply *reply, int64_t rtt_us);
+void		print_header(t_ping *ping);
 
 #endif
