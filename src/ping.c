@@ -10,10 +10,18 @@ int	ping_once(t_ping *ping, t_reply *reply)
 		return (1);
 	}
 
-	if (receive_packet(ping, reply))
+	switch (receive_packet(ping, reply))
 	{
-		fprintf(stderr, "ping_once: receive packet failed\n");
-		return (1);
+		case RECEIVE_OK:
+			break;
+		case RECEIVE_TIMEOUT:
+			// to do
+			return (0);
+		case RECEIVE_INTERRUPTED:
+			return (0);
+		case RECEIVE_ERROR:
+			fprintf(stderr, "ping_once: receive packet failed\n");
+			return (1);
 	}
 
 	if (parse_packet(reply))

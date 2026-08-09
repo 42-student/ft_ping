@@ -16,11 +16,20 @@
 # include <stdint.h>
 # include <inttypes.h>
 # include <signal.h>
+# include <errno.h>
 
 # define PACKET_SIZE 64
 # define PAYLOAD_SIZE 56
 
 extern volatile sig_atomic_t running;
+
+typedef enum e_receive_result
+{
+	RECEIVE_OK,
+	RECEIVE_TIMEOUT,
+	RECEIVE_INTERRUPTED,
+	RECEIVE_ERROR
+}	t_receive_result;
 
 typedef struct s_options
 {
@@ -67,18 +76,18 @@ typedef struct s_reply
 	
 }	t_reply;
 
-int			init_ping(t_ping *ping, int argc, char **argv);
-int			resolve_destination(t_ping *ping);
-int			create_socket(t_ping *ping);
-int			build_echo_request(t_ping *ping, unsigned char *buffer);
-uint16_t	calculate_checksum(void *data, size_t len);
-int			send_echo_request(t_ping *ping);
-int			receive_packet(t_ping *ping, t_reply *reply);
-int			parse_packet(t_reply *reply);
-int			validate_reply(t_ping *ping, t_reply *reply);
-int			ping_once(t_ping *ping, t_reply *reply);
-void		print_reply(t_ping *ping, t_reply *reply, int64_t rtt_us);
-void		print_header(t_ping *ping);
-int			setup_signal_handler(void);
+int					init_ping(t_ping *ping, int argc, char **argv);
+int					resolve_destination(t_ping *ping);
+int					create_socket(t_ping *ping);
+int					build_echo_request(t_ping *ping, unsigned char *buffer);
+uint16_t			calculate_checksum(void *data, size_t len);
+int					send_echo_request(t_ping *ping);
+t_receive_result	receive_packet(t_ping *ping, t_reply *reply);
+int					parse_packet(t_reply *reply);
+int					validate_reply(t_ping *ping, t_reply *reply);
+int					ping_once(t_ping *ping, t_reply *reply);
+void				print_reply(t_ping *ping, t_reply *reply, int64_t rtt_us);
+void				print_header(t_ping *ping);
+int					setup_signal_handler(void);
 
 #endif

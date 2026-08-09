@@ -1,6 +1,6 @@
 #include "../include/ft_ping.h"
 
-int	receive_packet(t_ping *ping, t_reply *reply)
+t_receive_result	receive_packet(t_ping *ping, t_reply *reply)
 {
 	socklen_t sender_len;
 
@@ -10,11 +10,14 @@ int	receive_packet(t_ping *ping, t_reply *reply)
 
 	if (reply->bytes_received < 0)
 	{
+		if (errno == EINTR)
+			return (RECEIVE_INTERRUPTED);
+
 		perror("recvfrom");
-		return (1);
+		return (RECEIVE_ERROR);
 	}
 
 	gettimeofday(&reply->timestamp, NULL);
 
-	return (0);
+	return (RECEIVE_OK);
 }
