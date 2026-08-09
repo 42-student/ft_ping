@@ -15,9 +15,12 @@
 # include <sys/time.h>
 # include <stdint.h>
 # include <inttypes.h>
+# include <signal.h>
 
 # define PACKET_SIZE 64
 # define PAYLOAD_SIZE 56
+
+extern volatile sig_atomic_t running;
 
 typedef struct s_options
 {
@@ -76,5 +79,6 @@ int			validate_reply(t_ping *ping, t_reply *reply);
 int			ping_once(t_ping *ping, t_reply *reply);
 void		print_reply(t_ping *ping, t_reply *reply, int64_t rtt_us);
 void		print_header(t_ping *ping);
+int			setup_signal_handler(void);
 
 #endif

@@ -5,6 +5,9 @@ int	main(int argc, char **argv)
 	t_ping ping;
 	t_reply reply;
 
+	if (setup_signal_handler())
+		return (EXIT_FAILURE);
+
 	if (init_ping(&ping, argc, argv))
 		return (EXIT_FAILURE);
 
@@ -14,7 +17,7 @@ int	main(int argc, char **argv)
 
 	memset(&reply, 0, sizeof(reply));
 
-	while (1)
+	while (running)
 	{
 		if (ping_once(&ping, &reply))
 		{

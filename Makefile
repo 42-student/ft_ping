@@ -21,7 +21,8 @@ SRCS := src/main.c \
 		src/receive.c \
 		src/parse.c \
 		src/validate_reply.c \
-		src/ping.c
+		src/ping.c \
+		src/signals.c
 
 OBJS := $(SRCS:.c=.o)
 
