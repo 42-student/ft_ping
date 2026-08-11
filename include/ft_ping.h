@@ -101,5 +101,6 @@ void				print_reply(t_ping *ping, t_reply *reply, int64_t rtt_us);
 void				print_header(t_ping *ping);
 int					setup_signal_handler(void);
 void				update_stats(t_ping *ping, int64_t rtt_us);
+void				print_stats(t_ping *ping);
 
 #endif

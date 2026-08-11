@@ -30,10 +30,25 @@ int	main(int argc, char **argv)
 		sleep(1);
 	}
 
+	printf("\n");
+	print_stats(&ping);
+
 	if (ping.socket.is_open)
 		close(ping.socket.fd);
 
 	return (EXIT_SUCCESS);
+}
+
+// TO DO: handle the case when received == 0 (there is no RTT statistic to report)
+void	print_stats(t_ping *ping)
+{
+	double min_rtt_ms = (double)ping->stats.min_rtt / 1000.0;
+	double max_rtt_ms = (double)ping->stats.max_rtt / 1000.0;
+	double total_rtt_ms = (double)ping->stats.total_rtt / 1000.0;
+	double loss_percentage = ((double)(ping->stats.transmitted - ping->stats.received) / (double)ping->stats.transmitted) * 100;
+
+	printf("--- %s ping statistics ---\n%" PRIu64 " packets transmitted, %" PRIu64 " received, %.1f%% packet loss\nrtt min/avg/max = %.3f/%.3f/%.3f ms\n", 
+		ping->destination.hostname, ping->stats.transmitted, ping->stats.received, loss_percentage, min_rtt_ms, (total_rtt_ms / ping->stats.received), max_rtt_ms);
 }
 
 void	print_header(t_ping *ping)
