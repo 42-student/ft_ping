@@ -13,9 +13,10 @@ int	ping_once(t_ping *ping, t_reply *reply)
 	switch (receive_packet(ping, reply))
 	{
 		case RECEIVE_OK:
+			ping->stats.received++;
 			break;
 		case RECEIVE_TIMEOUT:
-			// to do
+			printf("Request timeout for icmp_seq %d\n", ping->packet.sequence);
 			return (0);
 		case RECEIVE_INTERRUPTED:
 			return (0);
@@ -38,9 +39,22 @@ int	ping_once(t_ping *ping, t_reply *reply)
 
 	rtt_us = (reply->timestamp.tv_sec - ping->packet.timestamp.tv_sec) * 1000000L + (reply->timestamp.tv_usec - ping->packet.timestamp.tv_usec);
 
+	update_stats(ping, rtt_us);
+
 	print_reply(ping, reply, rtt_us);
 
 	return (0);
+}
+
+void	update_stats(t_ping *ping, int64_t rtt_us)
+{
+	if (ping->stats.min_rtt == 0 || ping->stats.min_rtt > rtt_us)
+		ping->stats.min_rtt = rtt_us;
+
+	if (ping->stats.max_rtt == 0 || ping->stats.max_rtt < rtt_us)
+		ping->stats.max_rtt = rtt_us;
+
+	ping->stats.total_rtt += rtt_us;
 }
 
 void	print_reply(t_ping *ping, t_reply *reply, int64_t rtt_us)

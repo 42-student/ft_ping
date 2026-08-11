@@ -49,14 +49,23 @@ typedef struct s_socket
 {
 	int		fd;
 	bool	is_open;
-} t_socket;
+}	t_socket;
 
 typedef struct s_packet
 {
 	uint16_t		identifier;
 	uint16_t		sequence;
 	struct timeval	timestamp;
-} t_packet;
+}	t_packet;
+
+typedef struct stats
+{
+	uint64_t	transmitted;
+	uint64_t	received;
+	int64_t		min_rtt;
+	int64_t		max_rtt;
+	int64_t		total_rtt;
+}	t_stats;
 
 typedef struct s_ping
 {
@@ -64,6 +73,7 @@ typedef struct s_ping
 	t_destination	destination;
 	t_socket		socket;
 	t_packet		packet;
+	t_stats			stats;
 }	t_ping;
 
 typedef struct s_reply
@@ -90,5 +100,6 @@ int					ping_once(t_ping *ping, t_reply *reply);
 void				print_reply(t_ping *ping, t_reply *reply, int64_t rtt_us);
 void				print_header(t_ping *ping);
 int					setup_signal_handler(void);
+void				update_stats(t_ping *ping, int64_t rtt_us);
 
 #endif

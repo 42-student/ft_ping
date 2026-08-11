@@ -16,5 +16,7 @@ int	send_echo_request(t_ping *ping)
 		return (1);
 	}
 
+	ping->stats.transmitted++;
+
 	return (0);
 }
