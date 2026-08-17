@@ -19,10 +19,16 @@ int	main(int argc, char **argv)
 
 	while (running)
 	{
-		if (ping_once(&ping, &reply))
+		switch (ping_once(&ping, &reply))
 		{
-			fprintf(stderr, "ping_once: failed\n");
-			return (EXIT_FAILURE);
+			case PING_REPLY:
+				break;
+			case PING_TIMEOUT:
+				break;
+			case PING_INTERRUPTED:
+				break;
+			case PING_ERROR:
+				return (EXIT_FAILURE);
 		}
 
 		ping.packet.sequence++;

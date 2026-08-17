@@ -1,6 +1,6 @@
 #include "../include/ft_ping.h"
 
-int	ping_once(t_ping *ping, t_reply *reply)
+t_ping_reply	ping_once(t_ping *ping, t_reply *reply)
 {
 	int64_t rtt_us;
 	struct timeval deadline, remaining;
@@ -8,7 +8,7 @@ int	ping_once(t_ping *ping, t_reply *reply)
 	if (send_echo_request(ping))
 	{
 		fprintf(stderr, "ping_once: echo request failed\n");
-		return (1);
+		return (PING_ERROR);
 	}
 
 	deadline.tv_sec = ping->packet.timestamp.tv_sec + 1;
@@ -19,7 +19,7 @@ int	ping_once(t_ping *ping, t_reply *reply)
 		if (calculate_remaining_time(deadline, &remaining))
 		{
 			printf("Request timeout for icmp_seq %d\n", ping->packet.sequence);
-			return (0);
+			return (PING_TIMEOUT);
 		}
 
 		switch (receive_packet(ping, reply, &remaining))
@@ -28,19 +28,16 @@ int	ping_once(t_ping *ping, t_reply *reply)
 				break;
 			case RECEIVE_TIMEOUT:
 				printf("Request timeout for icmp_seq %d\n", ping->packet.sequence);
-				return (0);
+				return (PING_TIMEOUT);
 			case RECEIVE_INTERRUPTED:
-				return (0);
+				return (PING_INTERRUPTED);
 			case RECEIVE_ERROR:
 				fprintf(stderr, "ping_once: receive packet failed\n");
-				return (1);
+				return (PING_ERROR);
 		}
 		
 		if (parse_packet(reply))
-		{
-			fprintf(stderr, "ping_once: parse packet failed\n");
-			return (1);
-		}
+			continue;
 		
 		switch (validate_reply(ping, reply))
 		{

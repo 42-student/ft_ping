@@ -47,6 +47,14 @@ typedef enum e_receive_result
 	RECEIVE_ERROR
 }	t_receive_result;
 
+typedef enum e_ping_reply
+{
+	PING_REPLY,
+	PING_TIMEOUT,
+	PING_INTERRUPTED,
+	PING_ERROR
+}	t_ping_reply;
+
 typedef struct s_options
 {
 	bool	verbose;
@@ -111,7 +119,7 @@ int					send_echo_request(t_ping *ping);
 t_receive_result	receive_packet(t_ping *ping, t_reply *reply, struct timeval *timeout);
 int					parse_packet(t_reply *reply);
 t_validate_reply	validate_reply(t_ping *ping, t_reply *reply);
-int					ping_once(t_ping *ping, t_reply *reply);
+t_ping_reply		ping_once(t_ping *ping, t_reply *reply);
 void				print_reply(t_ping *ping, t_reply *reply, int64_t rtt_us);
 void				print_header(t_ping *ping);
 int					setup_signal_handler(void);
