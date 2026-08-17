@@ -1,25 +1,21 @@
 #include "../include/ft_ping.h"
 
-t_receive_result	receive_packet(t_ping *ping, t_reply *reply)
+t_receive_result	receive_packet(t_ping *ping, t_reply *reply, struct timeval *timeout)
 {
 	fd_set readfds;
-	struct timeval timeout;
 	socklen_t sender_len;
 
 	FD_ZERO(&readfds);
 	FD_SET(ping->socket.fd, &readfds);
 
-	timeout.tv_sec = 1;
-	timeout.tv_usec = 0;
-
-	int res = select(ping->socket.fd + 1, &readfds, NULL, NULL, &timeout);
+	int res = select(ping->socket.fd + 1, &readfds, NULL, NULL, timeout);
 	
 	if (res == -1)
 	{
 		if (errno == EINTR)
-		return (RECEIVE_INTERRUPTED);
+			return (RECEIVE_INTERRUPTED);
 		perror("select");
-		return (RECEIVE_ERROR);
+			return (RECEIVE_ERROR);
 	}
 	else if (res == 0)
 		return (RECEIVE_TIMEOUT);
@@ -37,7 +33,7 @@ t_receive_result	receive_packet(t_ping *ping, t_reply *reply)
 			return (RECEIVE_INTERRUPTED);
 
 		perror("recvfrom");
-		return (RECEIVE_ERROR);
+			return (RECEIVE_ERROR);
 	}
 
 	gettimeofday(&reply->timestamp, NULL);

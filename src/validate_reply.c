@@ -1,6 +1,6 @@
 #include "../include/ft_ping.h"
 
-int	validate_reply(t_ping *ping, t_reply *reply)
+t_validate_reply	validate_reply(t_ping *ping, t_reply *reply)
 {
 	size_t icmp_len;
 	uint16_t checksum;
@@ -9,21 +9,21 @@ int	validate_reply(t_ping *ping, t_reply *reply)
 	{
 		fprintf(stderr, "validate_reply: invalid ICMP type\n");
 		// later manage this error msg (we don't want to have this printed on screen , maybe with -v)
-		return (1);
+		return (NOT_OUR_REPLY);
 	}
 
 	if (ntohs(reply->icmp->un.echo.id) != ping->packet.identifier)
 	{
 		fprintf(stderr, "validate_reply: invalid ICMP id\n");
 		// later manage this error msg (we don't want to have this printed on screen , maybe with -v)
-		return (1);
+		return (NOT_OUR_REPLY);
 	}
 
 	if (ntohs(reply->icmp->un.echo.sequence) != ping->packet.sequence)
 	{
 		fprintf(stderr, "validate_reply: invalid ICMP sequence\n");
 		// later manage this error msg (we don't want to have this printed on screen , maybe with -v)
-		return (1);
+		return (NOT_OUR_REPLY);
 	}
 
 	icmp_len = reply->bytes_received - (reply->ip->ihl * 4);
@@ -34,7 +34,7 @@ int	validate_reply(t_ping *ping, t_reply *reply)
 	{
 		fprintf(stderr, "validate_reply: invalid checksum\n");
 		// later manage this error msg (we don't want to have this printed on screen , maybe with -v)
-		return (1);
+		return (INVALID_CHECKSUM);
 	}
 
 	return (0);
