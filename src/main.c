@@ -28,6 +28,7 @@ int	main(int argc, char **argv)
 			case PING_INTERRUPTED:
 				break;
 			case PING_ERROR:
+				close_socket(&ping);
 				return (EXIT_FAILURE);
 		}
 
@@ -39,10 +40,15 @@ int	main(int argc, char **argv)
 	printf("\n");
 	print_stats(&ping);
 
-	if (ping.socket.is_open)
-		close(ping.socket.fd);
+	close_socket(&ping);
 
 	return (EXIT_SUCCESS);
+}
+
+void	close_socket(t_ping *ping)
+{
+	if (ping->socket.is_open)
+		close(ping->socket.fd);
 }
 
 void	print_stats(t_ping *ping)
