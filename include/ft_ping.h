@@ -110,24 +110,35 @@ typedef struct s_reply
 	char				src_ip[INET_ADDRSTRLEN];
 }	t_reply;
 
+//			init.c
 int					init_ping(t_ping *ping, int argc, char **argv);
+int					parse_options(t_ping *ping, int argc, char **argv, int *dest_index);
 int					resolve_destination(t_ping *ping);
 int					create_socket(t_ping *ping);
-int					build_echo_request(t_ping *ping, unsigned char *buffer);
-uint16_t			calculate_checksum(void *data, size_t len);
+
+//			ping.c
+t_ping_reply		ft_ping(t_ping *ping, t_reply *reply);
+
+//			send.c
 int					send_echo_request(t_ping *ping);
+int					build_echo_request(t_ping *ping, unsigned char *buffer);
+
+//			receive.c
 t_receive_result	receive_packet(t_ping *ping, t_reply *reply, struct timeval *timeout);
 int					parse_packet(t_reply *reply);
 t_validate_reply	validate_reply(t_ping *ping, t_reply *reply);
-t_ping_reply		ping_once(t_ping *ping, t_reply *reply);
-void				print_reply(t_ping *ping, t_reply *reply, int64_t rtt_us);
-void				print_header(t_ping *ping);
+
+//			signals.c
 int					setup_signal_handler(void);
-void				update_stats(t_ping *ping, int64_t rtt_us);
-void				print_stats(t_ping *ping);
-int					calculate_remaining_time(struct timeval deadline, struct timeval *remaining);
+
+//			utils.c
 void				close_socket(t_ping *ping);
-int					parse_options(t_ping *ping, int argc, char **argv, int *dest_index);
+uint16_t			calculate_checksum(void *data, size_t len);
+int					calculate_remaining_time(struct timeval deadline, struct timeval *remaining);
+void				update_stats(t_ping *ping, int64_t rtt_us);
 void				print_usage(void);
+void				print_header(t_ping *ping);
+void				print_reply(t_ping *ping, t_reply *reply, int64_t rtt_us);
+void				print_stats(t_ping *ping);
 
 #endif

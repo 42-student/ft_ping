@@ -13,16 +13,11 @@ NAME := ft_ping
 
 SRCS := src/main.c \
 		src/init.c \
-		src/resolve.c \
-		src/socket.c \
-		src/checksum.c \
 		src/send.c \
-		src/packet.c \
 		src/receive.c \
-		src/parse.c \
-		src/validate_reply.c \
 		src/ping.c \
-		src/signals.c
+		src/signals.c \
+		src/utils.c
 
 OBJS := $(SRCS:.c=.o)
 
