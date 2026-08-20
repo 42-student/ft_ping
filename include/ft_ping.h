@@ -106,6 +106,7 @@ typedef struct s_reply
 	struct iphdr		*ip;
 	struct icmphdr		*icmp;
 	struct sockaddr_in	sender;
+	struct hostent		*src_hostname;
 	struct timeval		timestamp;
 	char				src_ip[INET_ADDRSTRLEN];
 }	t_reply;

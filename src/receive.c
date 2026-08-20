@@ -101,6 +101,14 @@ int	parse_packet(t_reply *reply)
 		return (1);
 	}
 
+	reply->src_hostname = gethostbyaddr(&reply->sender.sin_addr, sizeof(reply->sender.sin_addr), AF_INET);
+
+	if (reply->src_hostname == NULL)
+	{
+		fprintf(stderr, "parse_packet: gethostbyaddr failed with: %s\n", hstrerror(h_errno));
+		return (1);
+	}
+
 	return (0);
 }
 
