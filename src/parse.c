@@ -2,6 +2,7 @@
 
 int	parse_packet(t_reply *reply)
 {
+	uint16_t ip_tot_len;
 	ssize_t iph_size;
 
 	if (reply->bytes_received < 20)
@@ -11,10 +12,23 @@ int	parse_packet(t_reply *reply)
 	}
 
 	reply->ip = (struct iphdr *)reply->buffer;
+	ip_tot_len = reply->ip->tot_len;
+
+	if (ip_tot_len < reply->bytes_received)
+	{
+		fprintf(stderr, "parse_packet: received %ld bytes, expected %d\n", reply->bytes_received, ip_tot_len);
+		return (1);
+	}
 
 	if (reply->ip->version != 4)
 	{
 		fprintf(stderr, "parse_packet: unsupported IP version (expected IPv4)\n");
+		return (1);
+	}
+
+	if (reply->ip->protocol != IPPROTO_ICMP)
+	{
+		fprintf(stderr, "parse_packet: IP protocol must be ICMP");
 		return (1);
 	}
 
@@ -39,12 +53,6 @@ int	parse_packet(t_reply *reply)
 	}
 
 	reply->icmp = (struct icmphdr *)(reply->buffer + iph_size);
-
-	if (reply->ip->protocol != IPPROTO_ICMP)
-	{
-		fprintf(stderr, "parse_packet: IP protocol must be ICMP");
-		return (1);
-	}
 
 	if (inet_ntop(AF_INET, &reply->ip->saddr, reply->src_ip, INET_ADDRSTRLEN) == NULL)
 	{
