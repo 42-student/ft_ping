@@ -107,7 +107,7 @@ typedef struct s_reply
 	struct icmphdr		*icmp;
 	struct sockaddr_in	sender;
 	struct timeval		timestamp;
-	
+	char				src_ip[INET_ADDRSTRLEN];
 }	t_reply;
 
 int					init_ping(t_ping *ping, int argc, char **argv);

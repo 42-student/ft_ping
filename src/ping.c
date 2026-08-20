@@ -38,7 +38,7 @@ t_ping_reply	ping_once(t_ping *ping, t_reply *reply)
 		
 		if (parse_packet(reply))
 			continue;
-		
+
 		switch (validate_reply(ping, reply))
 		{
 			case VALID_REPLY:
@@ -46,7 +46,6 @@ t_ping_reply	ping_once(t_ping *ping, t_reply *reply)
 			case NOT_OUR_REPLY:
 				continue;
 			case INVALID_CHECKSUM:
-				// TO DO
 				continue;
 		}
 
@@ -100,5 +99,5 @@ void	print_reply(t_ping *ping, t_reply *reply, int64_t rtt_us)
 {
 	double rtt_ms = (double)rtt_us / 1000.0;
 
-	printf("%zd bytes from %s: icmp_seq=%d ttl=%u time=%.2f ms\n", reply->bytes_received, ping->destination.ip, ping->packet.sequence, reply->ip->ttl, rtt_ms);
+	printf("%zd bytes from %s: icmp_seq=%d ttl=%u time=%.2f ms\n", reply->bytes_received, reply->src_ip, ping->packet.sequence, reply->ip->ttl, rtt_ms);
 }

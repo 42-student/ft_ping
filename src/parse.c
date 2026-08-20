@@ -40,5 +40,17 @@ int	parse_packet(t_reply *reply)
 
 	reply->icmp = (struct icmphdr *)(reply->buffer + iph_size);
 
+	if (reply->ip->protocol != IPPROTO_ICMP)
+	{
+		fprintf(stderr, "parse_packet: IP protocol must be ICMP");
+		return (1);
+	}
+
+	if (inet_ntop(AF_INET, &reply->ip->saddr, reply->src_ip, INET_ADDRSTRLEN) == NULL)
+	{
+		perror("inet_ntop in parse_packet");
+		return (1);
+	}
+
 	return (0);
 }

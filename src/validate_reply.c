@@ -37,5 +37,7 @@ t_validate_reply	validate_reply(t_ping *ping, t_reply *reply)
 		return (INVALID_CHECKSUM);
 	}
 
+	
+
 	return (0);
 }

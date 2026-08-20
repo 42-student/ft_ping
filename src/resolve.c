@@ -23,7 +23,7 @@ int	resolve_destination(t_ping *ping)
 
 	if (inet_ntop(AF_INET, &ping->destination.addr.sin_addr, ping->destination.ip, sizeof(ping->destination.ip)) == NULL)
 	{
-		perror("inet_ntop");
+		perror("inet_ntop in resolve_destination");
 		freeaddrinfo(result);
 		return (1);
 	}
