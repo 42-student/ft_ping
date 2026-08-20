@@ -127,5 +127,7 @@ void				update_stats(t_ping *ping, int64_t rtt_us);
 void				print_stats(t_ping *ping);
 int					calculate_remaining_time(struct timeval deadline, struct timeval *remaining);
 void				close_socket(t_ping *ping);
+int					parse_options(t_ping *ping, int argc, char **argv, int *dest_index);
+void				print_usage(void);
 
 #endif
