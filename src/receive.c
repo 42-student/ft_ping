@@ -41,14 +41,15 @@ t_receive_result	receive_packet(t_ping *ping, t_reply *reply, struct timeval *ti
 	return (RECEIVE_OK);
 }
 
-int	parse_packet(t_reply *reply)
+int	parse_packet(t_ping *ping, t_reply *reply)
 {
 	uint16_t ip_tot_len;
 	ssize_t iph_size;
 
 	if (reply->bytes_received < 20)
 	{
-		fprintf(stderr, "parse_packet: truncated IPv4 packet (expected at least 20 bytes)\n");
+		if (ping->options.verbose)
+			fprintf(stderr, "parse_packet: truncated IPv4 packet (expected at least 20 bytes)\n");
 		return (1);
 	}
 
@@ -57,19 +58,22 @@ int	parse_packet(t_reply *reply)
 
 	if (ip_tot_len < reply->bytes_received)
 	{
-		fprintf(stderr, "parse_packet: received %ld bytes, expected %d\n", reply->bytes_received, ip_tot_len);
+		if (ping->options.verbose)
+			fprintf(stderr, "parse_packet: received %ld bytes, expected %d\n", reply->bytes_received, ip_tot_len);
 		return (1);
 	}
 
 	if (reply->ip->version != 4)
 	{
-		fprintf(stderr, "parse_packet: unsupported IP version (expected IPv4)\n");
+		if (ping->options.verbose)
+			fprintf(stderr, "parse_packet: unsupported IP version (expected IPv4)\n");
 		return (1);
 	}
 
 	if (reply->ip->protocol != IPPROTO_ICMP)
 	{
-		fprintf(stderr, "parse_packet: IP protocol must be ICMP");
+		if (ping->options.verbose)
+			fprintf(stderr, "parse_packet: IP protocol must be ICMP");
 		return (1);
 	}
 
@@ -77,19 +81,22 @@ int	parse_packet(t_reply *reply)
 
 	if (iph_size < 20 || iph_size > 60)
 	{
-		fprintf(stderr, "parse_packet: invalid IPv4 header length\n");
+		if (ping->options.verbose)
+			fprintf(stderr, "parse_packet: invalid IPv4 header length\n");
 		return (1);
 	}
 
 	if (reply->bytes_received < iph_size)
 	{
-		fprintf(stderr, "parse_packet: truncated IPv4 header\n");
+		if (ping->options.verbose)
+			fprintf(stderr, "parse_packet: truncated IPv4 header\n");
 		return (1);
 	}
 
 	if ((reply->bytes_received - iph_size) < 8)
 	{
-		fprintf(stderr, "parse_packet: truncated ICMP header\n");
+		if (ping->options.verbose)
+			fprintf(stderr, "parse_packet: truncated ICMP header\n");
 		return (1);
 	}
 
@@ -97,7 +104,8 @@ int	parse_packet(t_reply *reply)
 
 	if (inet_ntop(AF_INET, &reply->ip->saddr, reply->src_ip, INET_ADDRSTRLEN) == NULL)
 	{
-		perror("inet_ntop in parse_packet");
+		if (ping->options.verbose)
+			perror("inet_ntop in parse_packet");
 		return (1);
 	}
 
@@ -105,7 +113,8 @@ int	parse_packet(t_reply *reply)
 
 	if (reply->src_hostname == NULL)
 	{
-		fprintf(stderr, "parse_packet: gethostbyaddr failed with: %s\n", hstrerror(h_errno));
+		if (ping->options.verbose)
+			fprintf(stderr, "parse_packet: gethostbyaddr failed with: %s\n", hstrerror(h_errno));
 		return (1);
 	}
 
@@ -119,22 +128,22 @@ t_validate_reply	validate_reply(t_ping *ping, t_reply *reply)
 
 	if (reply->icmp->type != ICMP_ECHOREPLY)
 	{
-		fprintf(stderr, "validate_reply: invalid ICMP type\n");
-		// later manage this error msg (we don't want to have this printed on screen , maybe with -v)
+		if (ping->options.verbose)
+			fprintf(stderr, "validate_reply: invalid ICMP type\n");
 		return (NOT_OUR_REPLY);
 	}
 
 	if (ntohs(reply->icmp->un.echo.id) != ping->packet.identifier)
 	{
-		fprintf(stderr, "validate_reply: invalid ICMP id\n");
-		// later manage this error msg (we don't want to have this printed on screen , maybe with -v)
+		if (ping->options.verbose)
+			fprintf(stderr, "validate_reply: invalid ICMP id\n");
 		return (NOT_OUR_REPLY);
 	}
 
 	if (ntohs(reply->icmp->un.echo.sequence) != ping->packet.sequence)
 	{
-		fprintf(stderr, "validate_reply: invalid ICMP sequence\n");
-		// later manage this error msg (we don't want to have this printed on screen , maybe with -v)
+		if (ping->options.verbose)
+			fprintf(stderr, "validate_reply: invalid ICMP sequence\n");
 		return (NOT_OUR_REPLY);
 	}
 
@@ -144,8 +153,8 @@ t_validate_reply	validate_reply(t_ping *ping, t_reply *reply)
 
 	if (checksum != 0)
 	{
-		fprintf(stderr, "validate_reply: invalid checksum\n");
-		// later manage this error msg (we don't want to have this printed on screen , maybe with -v)
+		if (ping->options.verbose)
+			fprintf(stderr, "validate_reply: invalid checksum\n");
 		return (INVALID_CHECKSUM);
 	}
 

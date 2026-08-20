@@ -126,7 +126,7 @@ int					build_echo_request(t_ping *ping, unsigned char *buffer);
 
 //			receive.c
 t_receive_result	receive_packet(t_ping *ping, t_reply *reply, struct timeval *timeout);
-int					parse_packet(t_reply *reply);
+int					parse_packet(t_ping *ping, t_reply *reply);
 t_validate_reply	validate_reply(t_ping *ping, t_reply *reply);
 
 //			signals.c

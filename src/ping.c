@@ -36,7 +36,7 @@ t_ping_reply	ft_ping(t_ping *ping, t_reply *reply)
 				return (PING_ERROR);
 		}
 		
-		if (parse_packet(reply))
+		if (parse_packet(ping, reply))
 			continue;
 
 		switch (validate_reply(ping, reply))
