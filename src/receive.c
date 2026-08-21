@@ -125,38 +125,76 @@ t_validate_reply	validate_reply(t_ping *ping, t_reply *reply)
 {
 	size_t icmp_len;
 	uint16_t checksum;
+	struct icmphdr *inner_icmp;
 
-	if (ntohs(reply->icmp->un.echo.id) != ping->packet.identifier)
+	if (reply->icmp->type == ICMP_ECHOREPLY)
 	{
-		if (ping->options.verbose)
-			fprintf(stderr, "validate_reply: invalid ICMP id\n");
-		return (NOT_OUR_REPLY);
+		if (ntohs(reply->icmp->un.echo.id) != ping->packet.identifier)
+			return (NOT_OUR_REPLY);
+
+		if (ntohs(reply->icmp->un.echo.sequence) != ping->packet.sequence)
+			return (NOT_OUR_REPLY);
+		
+		icmp_len = reply->bytes_received - (reply->ip->ihl * 4);
+		checksum = calculate_checksum(reply->icmp, icmp_len);
+
+		if (checksum != 0)
+		{
+			if (ping->options.verbose)
+				fprintf(stderr, "validate_reply: invalid checksum\n");
+			return (INVALID_CHECKSUM);
+		}
+
+		return (VALID_REPLY);
 	}
 
-	if (ntohs(reply->icmp->un.echo.sequence) != ping->packet.sequence)
+	if (reply->icmp->type == ICMP_DEST_UNREACH || reply->icmp->type == ICMP_TIME_EXCEEDED)
 	{
-		if (ping->options.verbose)
-			fprintf(stderr, "validate_reply: invalid ICMP sequence\n");
-		return (NOT_OUR_REPLY);
-	}
+		if (get_inner_icmp(reply, &inner_icmp))
+			return (NOT_OUR_REPLY);
 
-	icmp_len = reply->bytes_received - (reply->ip->ihl * 4);
+		if (inner_icmp->type != ICMP_ECHO)
+			return (NOT_OUR_REPLY);
 
-	checksum = calculate_checksum(reply->icmp, icmp_len);
+		if (inner_icmp->un.echo.id != ping->packet.identifier)
+			return (NOT_OUR_REPLY);
 
-	if (checksum != 0)
-	{
-		if (ping->options.verbose)
-			fprintf(stderr, "validate_reply: invalid checksum\n");
-		return (INVALID_CHECKSUM);
-	}
+		if (inner_icmp->un.echo.sequence != ping->packet.sequence)
+			return (NOT_OUR_REPLY);
 
-	if (reply->icmp->type != ICMP_ECHOREPLY)
-	{
-		if (ping->options.verbose)
-			fprintf(stderr, "validate_reply: ICMP error packet\n");
 		return (ICMP_ERROR_PACKET);
 	}
 
-	return (VALID_REPLY);
+	return (NOT_OUR_REPLY);
+}
+
+int	get_inner_icmp(t_reply *reply, struct icmphdr **inner_icmp)
+{
+	struct iphdr *inner_ip;
+	size_t outer_ip_len;
+	size_t outer_icmp_len;
+	size_t inner_ip_len;
+
+	outer_ip_len = reply->ip->ihl * 4;
+	outer_icmp_len = reply->bytes_received - outer_ip_len;
+
+	if (outer_icmp_len < sizeof(struct iphdr) + sizeof(struct icmphdr))
+		return (1);
+
+	inner_ip = (struct iphdr *)(unsigned char *)reply->icmp + sizeof(struct icmphdr);
+
+	if (inner_ip->version != 4)
+		return (1);
+
+	inner_ip_len = inner_ip->ihl * 4;
+
+	if (inner_ip_len < 20 || inner_ip_len > 60)
+		return (1);
+
+	if (outer_icmp_len < sizeof(struct icmphdr) + inner_ip_len + sizeof(struct icmphdr))
+		return (1);
+
+	*inner_icmp = (struct icmphdr *)(unsigned char *)inner_ip + inner_ip_len;
+
+	return (0);
 }
