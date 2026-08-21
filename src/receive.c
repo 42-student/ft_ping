@@ -160,15 +160,3 @@ t_validate_reply	validate_reply(t_ping *ping, t_reply *reply)
 
 	return (VALID_REPLY);
 }
-
-void	report_icmp_result(t_reply *reply)
-{
-	if (reply->icmp->code == ICMP_DEST_UNREACH)
-		fprintf(stderr, "From %s icmp_seq=%d Destination Host Unreachable", reply->src_ip, reply->icmp->un.echo.sequence);
-	else if (reply->icmp->code == ICMP_TIME_EXCEEDED)
-		fprintf(stderr, "From %s icmp_seq=%d Time to live exceeded", reply->src_ip, reply->icmp->un.echo.sequence);
-	else if (reply->icmp->code == ICMP_PARAMETERPROB)
-		fprintf(stderr, "From %s icmp_seq=%d Parameter problem", reply->src_ip, reply->icmp->un.echo.sequence);
-	else
-		fprintf(stderr, "From %s icmp_seq=%d Unknown ICMP code", reply->src_ip, reply->icmp->un.echo.sequence);
-}

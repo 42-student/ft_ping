@@ -122,7 +122,6 @@ int					build_echo_request(t_ping *ping, unsigned char *buffer);
 t_receive_result	receive_packet(t_ping *ping, t_reply *reply, struct timeval *timeout);
 int					parse_packet(t_ping *ping, t_reply *reply);
 t_validate_reply	validate_reply(t_ping *ping, t_reply *reply);
-void				report_icmp_result(t_reply *reply);
 
 //			signals.c
 int					setup_signal_handler(void);
