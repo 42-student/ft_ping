@@ -18,7 +18,8 @@ t_ping_reply	ft_ping(t_ping *ping, t_reply *reply)
 	{
 		if (calculate_remaining_time(deadline, &remaining))
 		{
-			printf("Request timeout for icmp_seq %d\n", ping->packet.sequence);
+			if (ping->options.verbose)
+				printf("Request timeout for icmp_seq %d\n", ping->packet.sequence);
 			return (PING_TIMEOUT);
 		}
 
@@ -27,12 +28,14 @@ t_ping_reply	ft_ping(t_ping *ping, t_reply *reply)
 			case RECEIVE_OK:
 				break;
 			case RECEIVE_TIMEOUT:
-				printf("Request timeout for icmp_seq %d\n", ping->packet.sequence);
+				if (ping->options.verbose)
+					printf("Request timeout for icmp_seq %d\n", ping->packet.sequence);
 				return (PING_TIMEOUT);
 			case RECEIVE_INTERRUPTED:
 				return (PING_INTERRUPTED);
 			case RECEIVE_ERROR:
-				fprintf(stderr, "ping_once: receive packet failed\n");
+				if (ping->options.verbose)
+					fprintf(stderr, "ping_once: receive packet failed\n");
 				return (PING_ERROR);
 		}
 		
