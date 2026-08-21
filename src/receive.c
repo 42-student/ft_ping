@@ -25,7 +25,7 @@ t_receive_result	receive_packet(t_ping *ping, t_reply *reply, struct timeval *ti
 
 	sender_len = sizeof(reply->sender);
 
-	reply->bytes_received = recvfrom(ping->socket.fd, reply->buffer, 1500, 0, (struct sockaddr *)&reply->sender, &sender_len);
+	reply->bytes_received = recvfrom(ping->socket.fd, reply->buffer, RECV_BUFFER_SIZE, 0, (struct sockaddr *)&reply->sender, &sender_len);
 
 	if (reply->bytes_received < 0)
 	{
@@ -54,9 +54,9 @@ int	parse_packet(t_ping *ping, t_reply *reply)
 	}
 
 	reply->ip = (struct iphdr *)reply->buffer;
-	ip_tot_len = reply->ip->tot_len;
+	ip_tot_len = ntohs(reply->ip->tot_len);
 
-	if (ip_tot_len < reply->bytes_received)
+	if ((size_t)reply->bytes_received < ip_tot_len)
 	{
 		if (ping->options.verbose)
 			fprintf(stderr, "parse_packet: received %ld bytes, expected %d\n", reply->bytes_received, ip_tot_len);
@@ -158,5 +158,5 @@ t_validate_reply	validate_reply(t_ping *ping, t_reply *reply)
 		return (INVALID_CHECKSUM);
 	}
 
-	return (0);
+	return (VALID_REPLY);
 }

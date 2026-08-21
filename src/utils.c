@@ -3,7 +3,10 @@
 void	close_socket(t_ping *ping)
 {
 	if (ping->socket.is_open)
-	close(ping->socket.fd);
+	{
+		close(ping->socket.fd);
+		ping->socket.is_open = false;
+	}
 }
 
 uint16_t	calculate_checksum(void *data, size_t len)

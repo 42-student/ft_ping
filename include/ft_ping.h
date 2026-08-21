@@ -21,6 +21,7 @@
 
 # define PACKET_SIZE 64
 # define PAYLOAD_SIZE 56
+# define RECV_BUFFER_SIZE 1500
 
 extern volatile sig_atomic_t running;
 
@@ -28,7 +29,7 @@ typedef enum e_icmp_result
 {
 	ICMP_REPLY,
 	ICMP_DEST_UNREACHABLE,
-	ICMP_TUME_EXCEEDED,
+	ICMP_TIME_EXCEED,
 	ICMP_OTHER
 }	t_icmp_result;
 
@@ -101,7 +102,7 @@ typedef struct s_ping
 
 typedef struct s_reply
 {
-	unsigned char		buffer[1500];
+	unsigned char		buffer[RECV_BUFFER_SIZE];
 	ssize_t				bytes_received;
 	struct iphdr		*ip;
 	struct icmphdr		*icmp;
