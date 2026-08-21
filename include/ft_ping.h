@@ -25,19 +25,12 @@
 
 extern volatile sig_atomic_t running;
 
-typedef enum e_icmp_result
-{
-	ICMP_REPLY,
-	ICMP_DEST_UNREACHABLE,
-	ICMP_TIME_EXCEED,
-	ICMP_OTHER
-}	t_icmp_result;
-
 typedef enum e_validate_reply
 {
 	VALID_REPLY,
 	NOT_OUR_REPLY,
-	INVALID_CHECKSUM
+	INVALID_CHECKSUM,
+	ICMP_ERROR_PACKET
 }	t_validate_reply;
 
 typedef enum e_receive_result
@@ -129,6 +122,7 @@ int					build_echo_request(t_ping *ping, unsigned char *buffer);
 t_receive_result	receive_packet(t_ping *ping, t_reply *reply, struct timeval *timeout);
 int					parse_packet(t_ping *ping, t_reply *reply);
 t_validate_reply	validate_reply(t_ping *ping, t_reply *reply);
+void				report_icmp_result(t_reply *reply);
 
 //			signals.c
 int					setup_signal_handler(void);
