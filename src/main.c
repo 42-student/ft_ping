@@ -19,7 +19,7 @@ int	main(int argc, char **argv)
 	{
 		switch (ft_ping(&ping, &reply))
 		{
-			case PING_REPLY:
+			case PING_SUCCESS:
 				break;
 			case PING_TIMEOUT:
 				break;

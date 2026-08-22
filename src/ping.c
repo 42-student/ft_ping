@@ -51,7 +51,8 @@ t_ping_reply	ft_ping(t_ping *ping, t_reply *reply)
 			case INVALID_CHECKSUM:
 				continue;
 			case ICMP_ERROR_PACKET:
-				break;
+				ping->stats.errors++;
+				return (PING_SUCCESS);
 		}
 
 		break;
@@ -67,5 +68,5 @@ t_ping_reply	ft_ping(t_ping *ping, t_reply *reply)
 
 	print_reply(ping, reply, rtt_us);
 
-	return (0);
+	return (PING_SUCCESS);
 }
