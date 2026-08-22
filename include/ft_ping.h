@@ -100,9 +100,9 @@ typedef struct s_reply
 	struct iphdr		*ip;
 	struct icmphdr		*icmp;
 	struct sockaddr_in	sender;
-	struct hostent		*src_hostname;
 	struct timeval		timestamp;
 	char				src_ip[INET_ADDRSTRLEN];
+	char				src_hostname[NI_MAXHOST];
 }	t_reply;
 
 //			init.c
@@ -122,6 +122,7 @@ int					build_echo_request(t_ping *ping, unsigned char *buffer);
 t_receive_result	receive_packet(t_ping *ping, t_reply *reply, struct timeval *timeout);
 int					parse_packet(t_ping *ping, t_reply *reply);
 t_validate_reply	validate_reply(t_ping *ping, t_reply *reply);
+void				get_src_hostname(t_ping *ping, t_reply *reply);
 int					get_inner_icmp(t_reply *reply, struct icmphdr **inner_icmp);
 void				report_icmp_error(t_reply *reply, struct icmphdr *inner_icmp);
 
