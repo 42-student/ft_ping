@@ -156,10 +156,10 @@ t_validate_reply	validate_reply(t_ping *ping, t_reply *reply)
 		if (inner_icmp->type != ICMP_ECHO)
 			return (NOT_OUR_REPLY);
 
-		if (inner_icmp->un.echo.id != ping->packet.identifier)
+		if (ntohs(inner_icmp->un.echo.id) != ping->packet.identifier)
 			return (NOT_OUR_REPLY);
 
-		if (inner_icmp->un.echo.sequence != ping->packet.sequence)
+		if (ntohs(inner_icmp->un.echo.sequence) != ping->packet.sequence)
 			return (NOT_OUR_REPLY);
 
 		return (ICMP_ERROR_PACKET);
