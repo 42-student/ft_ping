@@ -123,6 +123,7 @@ t_receive_result	receive_packet(t_ping *ping, t_reply *reply, struct timeval *ti
 int					parse_packet(t_ping *ping, t_reply *reply);
 t_validate_reply	validate_reply(t_ping *ping, t_reply *reply);
 int					get_inner_icmp(t_reply *reply, struct icmphdr **inner_icmp);
+void				report_icmp_error(t_reply *reply, struct icmphdr *inner_icmp);
 
 //			signals.c
 int					setup_signal_handler(void);

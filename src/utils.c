@@ -82,7 +82,7 @@ void	print_reply(t_ping *ping, t_reply *reply, int64_t rtt_us)
 {
 	double rtt_ms = (double)rtt_us / 1000.0;
 
-	printf("%zd bytes from %s (%s): icmp_seq=%d ttl=%u time=%.2f ms\n", reply->bytes_received, reply->src_hostname->h_name,reply->src_ip, ping->packet.sequence, reply->ip->ttl, rtt_ms);
+	printf("%zd bytes from (%s): icmp_seq=%d ttl=%u time=%.2f ms\n", reply->bytes_received, reply->src_ip, ping->packet.sequence, reply->ip->ttl, rtt_ms);
 
 	if (ping->options.verbose)
 	{

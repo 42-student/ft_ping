@@ -13,7 +13,7 @@ t_ping_reply	ft_ping(t_ping *ping, t_reply *reply)
 
 	deadline.tv_sec = ping->packet.timestamp.tv_sec + 1;
 	deadline.tv_usec = ping->packet.timestamp.tv_usec;
-	
+
 	while (true)
 	{
 		if (calculate_remaining_time(deadline, &remaining))
@@ -38,7 +38,7 @@ t_ping_reply	ft_ping(t_ping *ping, t_reply *reply)
 					fprintf(stderr, "ping_once: receive packet failed\n");
 				return (PING_ERROR);
 		}
-		
+
 		if (parse_packet(ping, reply))
 			continue;
 
