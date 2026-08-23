@@ -53,6 +53,7 @@ typedef struct s_options
 {
 	bool	verbose;
 	bool	help;
+	int		ttl;
 }	t_options;
 
 typedef struct s_destination

@@ -36,22 +36,49 @@ int	init_ping(t_ping *ping, int argc, char **argv)
 int	parse_options(t_ping *ping, int argc, char **argv, int *dest_index)
 {
 	int i = 1;
+	char *value;
+	char *end;
+	long ttl;
 
 	while (i < argc)
 	{
 		if (argv[i][0] != '-')
 			break;
+
 		if (strcmp(argv[i], "-v") == 0)
 			ping->options.verbose = true;
 		else if (strcmp(argv[i], "-?") == 0 || strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0)
 			ping->options.help = true;
+		else if (strncmp(argv[i], "--ttl=", 6) == 0)
+		{
+			value = argv[i] + 6;
+
+			if (*value == '\0')
+			{
+				fprintf(stderr, "ft_ping: invalid TTL: %s\n", value);
+				return (1);
+			}
+
+			errno = 0;
+			ttl = strtol(value, &end, 10);
+
+			if (errno == ERANGE || *end != '\0' || ttl < 1	|| ttl > 255)
+			{
+				fprintf(stderr, "ft_ping: invalid TTL: %s\n", value);
+				return (1);
+			}
+
+			ping->options.ttl = (int)ttl;
+		}
 		else
 		{
 			fprintf(stderr, "ft_ping: unknown option: %s\n", argv[i]);
 			return (1);
 		}
+
 		i++;
 	}
+
 	*dest_index = i;
 
 	return (0);
@@ -98,6 +125,16 @@ int	create_socket(t_ping *ping)
 	{
 		perror("socket");
 		return (1);
+	}
+
+	if (ping->options.ttl)
+	{
+		if (setsockopt(ping->socket.fd, IPPROTO_IP, IP_TTL, &ping->options.ttl, sizeof(ping->options.ttl)) == -1)
+		{
+			perror("setsockopt IP_TTL");
+			close(ping->socket.fd);
+			return (1);
+		}
 	}
 
 	ping->socket.is_open = true;
