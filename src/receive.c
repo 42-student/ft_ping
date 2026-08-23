@@ -161,21 +161,6 @@ t_validate_reply	validate_reply(t_ping *ping, t_reply *reply)
 	return (NOT_OUR_REPLY);
 }
 
-void	get_src_hostname(t_ping *ping, t_reply *reply)
-{
-	int ret;
-
-	ret = getnameinfo((struct sockaddr *)&reply->sender, sizeof(reply->sender), reply->src_hostname, sizeof(reply->src_hostname), NULL, 0, NI_NAMEREQD);
-
-	if (ret != 0)
-	{
-		if (ping->options.verbose)
-			fprintf(stderr, "get_src_hostname: getnameinfo faild: %s\n", gai_strerror(ret));
-
-		reply->src_hostname[0] = '\0';
-	}
-}
-
 int	get_inner_icmp(t_reply *reply, struct icmphdr **inner_icmp)
 {
 	struct iphdr *inner_ip;

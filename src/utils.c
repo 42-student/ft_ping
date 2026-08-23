@@ -75,27 +75,22 @@ void	print_usage(void)
 
 void	print_header(t_ping *ping)
 {
-	printf("PING %s (%s) 56(84) bytes of data.\n", ping->destination.hostname, ping->destination.ip);
+	printf("PING %s (%s): 56 data bytes", ping->destination.hostname, ping->destination.ip);
+
+	if (ping->options.verbose)
+		printf(", id 0x%04x = %u", ping->packet.identifier & 0xffff, ping->packet.identifier & 0xffff);
+
+	printf("\n");
 }
 
 void	print_reply(t_ping *ping, t_reply *reply, int64_t rtt_us)
 {
 	double rtt_ms = (double)rtt_us / 1000.0;
 
-	if (reply->src_hostname[0] != '\0')
-		printf("%zd bytes from %s (%s): icmp_seq=%d ttl=%u time=%.2f ms\n", reply->bytes_received - (reply->ip->ihl * 4), reply->src_hostname, reply->src_ip, ping->packet.sequence, reply->ip->ttl, rtt_ms);
-	else
-		printf("%zd bytes from %s (%s): icmp_seq=%d ttl=%u time=%.2f ms\n", reply->bytes_received - (reply->ip->ihl * 4), reply->src_ip, reply->src_ip, ping->packet.sequence, reply->ip->ttl, rtt_ms);
-
-	if (ping->options.verbose)
-	{
-		printf("    IP packet >>> length: %d bytes | %ld bytes received.\n",ntohs(reply->ip->tot_len), reply->bytes_received);
-		printf("    IP header >>> version: %d | length: %d bytes | protocol: %d\n", reply->ip->version, (reply->ip->ihl * 4), reply->ip->protocol);
-		printf("  ICMP header >>> type: %d | code: %d\n", reply->icmp->type, reply->icmp->code);
-	}
+	printf("%zd bytes from %s: icmp_seq=%d ttl=%u time=%.3f ms\n", reply->bytes_received - (reply->ip->ihl * 4), reply->src_ip, ping->packet.sequence, reply->ip->ttl, rtt_ms);
 }
 
-void	print_stats(t_ping *ping, int64_t elapsed_ms)
+void	print_stats(t_ping *ping)
 {
 	double min_rtt_ms = (double)ping->stats.min_rtt / 1000.0;
 	double max_rtt_ms = (double)ping->stats.max_rtt / 1000.0;
@@ -104,16 +99,16 @@ void	print_stats(t_ping *ping, int64_t elapsed_ms)
 
 	if (ping->stats.errors)
 	{
-		printf("--- %s ping statistics ---\n%" PRIu64 " packets transmitted, %" PRIu64 " received, +%" PRId64 " errors, %.f%% packet loss, time %" PRId64 "ms\nrtt min/avg/max = %.3f/%.3f/%.3f ms\n", 
-				ping->destination.hostname, ping->stats.transmitted, ping->stats.received, ping->stats.errors, loss_percentage, elapsed_ms, min_rtt_ms, (total_rtt_ms / ping->stats.received), max_rtt_ms);
+		printf("--- %s ping statistics ---\n%" PRIu64 " packets transmitted, %" PRIu64 " packets received, +%" PRId64 " errors, %.f%% packet loss\nround-trip min/avg/max = %.3f/%.3f/%.3f ms\n", 
+				ping->destination.hostname, ping->stats.transmitted, ping->stats.received, ping->stats.errors, loss_percentage, min_rtt_ms, (total_rtt_ms / ping->stats.received), max_rtt_ms);
 	}
 	else
 	{
 		if (ping->stats.received == 0)
-			printf("--- %s ping statistics ---\n%" PRIu64 " packets transmitted, %" PRIu64 " received, %.f%% packet loss, time %" PRId64 "ms\n", 
-				ping->destination.hostname, ping->stats.transmitted, ping->stats.received, loss_percentage, elapsed_ms);
+			printf("--- %s ping statistics ---\n%" PRIu64 " packets transmitted, %" PRIu64 " packets received, %.f%% packet loss\n", 
+				ping->destination.hostname, ping->stats.transmitted, ping->stats.received, loss_percentage);
 		else
-			printf("--- %s ping statistics ---\n%" PRIu64 " packets transmitted, %" PRIu64 " received, %.f%% packet loss, time %" PRId64 "ms\nrtt min/avg/max = %.3f/%.3f/%.3f ms\n", 
-				ping->destination.hostname, ping->stats.transmitted, ping->stats.received, loss_percentage, elapsed_ms, min_rtt_ms, (total_rtt_ms / ping->stats.received), max_rtt_ms);
+			printf("--- %s ping statistics ---\n%" PRIu64 " packets transmitted, %" PRIu64 " packets received, %.f%% packet loss\nround-trip min/avg/max = %.3f/%.3f/%.3f ms\n", 
+				ping->destination.hostname, ping->stats.transmitted, ping->stats.received, loss_percentage, min_rtt_ms, (total_rtt_ms / ping->stats.received), max_rtt_ms);
 	}
 }
