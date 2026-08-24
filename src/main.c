@@ -21,6 +21,8 @@ int	main(int argc, char **argv)
 		{
 			case PING_SUCCESS:
 				break;
+			case PING_ERROR_PACKET:
+				break;
 			case PING_TIMEOUT:
 				break;
 			case PING_INTERRUPTED:

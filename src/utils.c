@@ -98,18 +98,10 @@ void	print_stats(t_ping *ping)
 	double total_rtt_ms = (double)ping->stats.total_rtt / 1000.0;
 	double loss_percentage = ((double)(ping->stats.transmitted - ping->stats.received) / (double)ping->stats.transmitted) * 100;
 
-	if (ping->stats.errors)
-	{
-		printf("--- %s ping statistics ---\n%" PRIu64 " packets transmitted, %" PRIu64 " packets received, +%" PRId64 " errors, %.f%% packet loss\nround-trip min/avg/max = %.3f/%.3f/%.3f ms\n", 
-				ping->destination.hostname, ping->stats.transmitted, ping->stats.received, ping->stats.errors, loss_percentage, min_rtt_ms, (total_rtt_ms / ping->stats.received), max_rtt_ms);
-	}
+	if (ping->stats.received == 0)
+		printf("--- %s ping statistics ---\n%" PRIu64 " packets transmitted, %" PRIu64 " packets received, %.f%% packet loss\n", 
+			ping->destination.hostname, ping->stats.transmitted, ping->stats.received, loss_percentage);
 	else
-	{
-		if (ping->stats.received == 0)
-			printf("--- %s ping statistics ---\n%" PRIu64 " packets transmitted, %" PRIu64 " packets received, %.f%% packet loss\n", 
-				ping->destination.hostname, ping->stats.transmitted, ping->stats.received, loss_percentage);
-		else
-			printf("--- %s ping statistics ---\n%" PRIu64 " packets transmitted, %" PRIu64 " packets received, %.f%% packet loss\nround-trip min/avg/max = %.3f/%.3f/%.3f ms\n", 
-				ping->destination.hostname, ping->stats.transmitted, ping->stats.received, loss_percentage, min_rtt_ms, (total_rtt_ms / ping->stats.received), max_rtt_ms);
-	}
+		printf("--- %s ping statistics ---\n%" PRIu64 " packets transmitted, %" PRIu64 " packets received, %.f%% packet loss\nround-trip min/avg/max = %.3f/%.3f/%.3f ms\n", 
+			ping->destination.hostname, ping->stats.transmitted, ping->stats.received, loss_percentage, min_rtt_ms, (total_rtt_ms / ping->stats.received), max_rtt_ms);
 }

@@ -11,7 +11,7 @@ t_ping_reply	ft_ping(t_ping *ping, t_reply *reply)
 		return (PING_ERROR);
 	}
 
-	deadline.tv_sec = ping->packet.timestamp.tv_sec + 1;
+	deadline.tv_sec = ping->packet.timestamp.tv_sec + 10;
 	deadline.tv_usec = ping->packet.timestamp.tv_usec;
 
 	while (true)
@@ -44,8 +44,7 @@ t_ping_reply	ft_ping(t_ping *ping, t_reply *reply)
 			case INVALID_CHECKSUM:
 				continue;
 			case ICMP_ERROR_PACKET:
-				ping->stats.errors++;
-				return (PING_SUCCESS);
+				return (PING_ERROR_PACKET);
 		}
 
 		break;

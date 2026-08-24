@@ -44,6 +44,7 @@ typedef enum e_receive_result
 typedef enum e_ping_reply
 {
 	PING_SUCCESS,
+	PING_ERROR_PACKET,
 	PING_TIMEOUT,
 	PING_INTERRUPTED,
 	PING_ERROR
@@ -80,7 +81,6 @@ typedef struct stats
 {
 	uint64_t	transmitted;
 	uint64_t	received;
-	uint64_t	errors;
 	int64_t		min_rtt;
 	int64_t		max_rtt;
 	int64_t		total_rtt;

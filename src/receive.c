@@ -196,10 +196,10 @@ int	get_inner_ip_icmp(t_reply *reply, struct iphdr **inner_ip, struct icmphdr **
 	outer_ip_len = reply->ip->ihl * 4;
 	outer_icmp_len = reply->bytes_received - outer_ip_len;
 
-	if (outer_icmp_len < sizeof(struct iphdr) + sizeof(struct icmphdr))
+	if (outer_icmp_len < sizeof(struct icmphdr) + sizeof(struct iphdr) + sizeof(struct icmphdr))
 		return (1);
 
-	*inner_ip = (struct iphdr *)(unsigned char *)reply->icmp + sizeof(struct icmphdr);
+	*inner_ip = (struct iphdr *)((unsigned char *)reply->icmp + sizeof(struct icmphdr));
 
 	if ((*inner_ip)->version != 4)
 		return (1);
@@ -215,7 +215,7 @@ int	get_inner_ip_icmp(t_reply *reply, struct iphdr **inner_ip, struct icmphdr **
 	if (outer_icmp_len < sizeof(struct icmphdr) + inner_ip_len + sizeof(struct icmphdr))
 		return (1);
 
-	*inner_icmp = (struct icmphdr *)(unsigned char *)inner_ip + inner_ip_len;
+	*inner_icmp = (struct icmphdr *)((unsigned char *)*inner_ip + inner_ip_len);
 
 	return (0);
 }
@@ -224,36 +224,34 @@ void	report_icmp_error(t_ping *ping, t_reply *reply, struct iphdr *inner_ip, str
 {
 	int type;
 	int code;
-	int seq;
 	const char *message;
 
 	type = reply->icmp->type;
 	code = reply->icmp->code;
-	seq = ntohs(inner_icmp->un.echo.sequence);
 
 	message = get_icmp_error_message(type, code);
 
 	if (message)
 	{
-		printf("From (%s) icmp_seq=%d %s\n", reply->src_ip, seq, message);
+		printf("%zd bytes from %s: %s\n", reply->bytes_received, reply->src_ip, message);
 		if (ping->options.verbose)
 			print_inner_ip_icmp(inner_ip, inner_icmp);
 	}
 	else if (type == ICMP_DEST_UNREACH)
 	{
-		printf("From (%s) icmp_seq=%d Unknown Destination-Unreachable Code: %d\n", reply->src_ip, seq, code);
+		printf("%zd bytes from %s: Unknown Destination-Unreachable Code: %d\n", reply->bytes_received, reply->src_ip, code);
 		if (ping->options.verbose)
 			print_inner_ip_icmp(inner_ip, inner_icmp);
 	}
 	else if (type == ICMP_TIME_EXCEEDED)
 	{
-		printf("From (%s) icmp_seq=%d Unknown Time-Exceeded Code: %d\n", reply->src_ip, seq, code);
+		printf("%zd bytes from %s: Unknown Time-Exceeded Code: %d\n", reply->bytes_received, reply->src_ip, code);
 		if (ping->options.verbose)
 			print_inner_ip_icmp(inner_ip, inner_icmp);
 	}
 	else
 	{
-		printf("From (%s) icmp_seq=%d Unknown ICMP Type Error; type(%d) code(%d)\n", reply->src_ip, seq, type, code);
+		printf("%zd bytes from %s: Unknown ICMP Type Error; type(%d) code(%d)\n", reply->bytes_received, reply->src_ip, type, code);
 		if (ping->options.verbose)
 			print_inner_ip_icmp(inner_ip, inner_icmp);
 	}
