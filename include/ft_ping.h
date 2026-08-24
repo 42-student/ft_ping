@@ -121,11 +121,12 @@ int					build_echo_request(t_ping *ping, unsigned char *buffer);
 
 //			receive.c
 t_receive_result	receive_packet(t_ping *ping, t_reply *reply, struct timeval *timeout);
-int					parse_packet(t_ping *ping, t_reply *reply);
+int					parse_packet(t_reply *reply);
 t_validate_reply	validate_reply(t_ping *ping, t_reply *reply);
-int					get_inner_icmp(t_reply *reply, struct icmphdr **inner_icmp);
-void				report_icmp_error(t_reply *reply, struct icmphdr *inner_icmp);
+int					get_inner_ip_icmp(t_reply *reply, struct iphdr **inner_ip, struct icmphdr **inner_icmp);
+void				report_icmp_error(t_ping *ping, t_reply *reply, struct iphdr *inner_ip, struct icmphdr *inner_icmp);
 const char			*get_icmp_error_message(int type, int code);
+void				print_inner_ip_icmp(struct iphdr *inner_ip, struct icmphdr *inner_icmp);
 
 //			signals.c
 int					setup_signal_handler(void);

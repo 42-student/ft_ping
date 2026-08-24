@@ -9,41 +9,23 @@ struct icmp_error_message
 
 static const struct icmp_error_message icmp_errors[] = {
 	{ ICMP_DEST_UNREACH, ICMP_NET_UNREACH, "Destination Network Unreachable" },
-
 	{ ICMP_DEST_UNREACH, ICMP_HOST_UNREACH, "Destination Host Unreachable" },
-
 	{ ICMP_DEST_UNREACH, ICMP_PROT_UNREACH, "Destination Protocol Unreachable" },
-
 	{ ICMP_DEST_UNREACH, ICMP_PORT_UNREACH, "Destination Port Unreachable" },
-
 	{ ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED, "Destination Fragmentation Needed And DF Set" },
-
 	{ ICMP_DEST_UNREACH, ICMP_SR_FAILED, "Destination Source Route Failed" },
-
 	{ ICMP_DEST_UNREACH, ICMP_NET_UNKNOWN, "Destination Network Unknown" },
-
 	{ ICMP_DEST_UNREACH, ICMP_HOST_UNKNOWN, "Destination Host Unknown" },
-
 	{ ICMP_DEST_UNREACH, ICMP_HOST_ISOLATED, "Destination Source Host Isolated" },
-
 	{ ICMP_DEST_UNREACH, ICMP_NET_ANO, "Destination Network Administratively Prohibited" },
-
 	{ ICMP_DEST_UNREACH, ICMP_HOST_ANO, "Destination Host Administratively Prohibited" },
-
 	{ ICMP_DEST_UNREACH, ICMP_NET_UNR_TOS, "Destination Network Unreachable For TOS" },
-
 	{ ICMP_DEST_UNREACH, ICMP_HOST_UNR_TOS, "Destination Host Unreachable For TOS" },
-
 	{ ICMP_DEST_UNREACH, ICMP_PKT_FILTERED, "Destination Communication Administratively Prohibited" },
-
 	{ ICMP_DEST_UNREACH, ICMP_PREC_VIOLATION, "Destination Host Precedence Violation" },
-
 	{ ICMP_DEST_UNREACH, ICMP_PREC_CUTOFF, "Destination Precedence Cutoff In Effect" },
-
 	/* ... */
-
 	{ ICMP_TIME_EXCEEDED, ICMP_EXC_TTL, "Time To Live Exceeded In Transit" },
-
 	{ ICMP_TIME_EXCEEDED, ICMP_EXC_FRAGTIME, "Fragment Reassembly Time Exceeded" },
 };
 
@@ -88,62 +70,60 @@ t_receive_result	receive_packet(t_ping *ping, t_reply *reply, struct timeval *ti
 	return (RECEIVE_OK);
 }
 
-int	parse_packet(t_ping *ping, t_reply *reply)
+int	parse_packet(t_reply *reply)
 {
-	uint16_t ip_tot_len;
 	ssize_t iph_size;
+	uint16_t ip_tot_len;
 
 	if (reply->bytes_received < 20)
 	{
-		if (ping->options.verbose)
-			fprintf(stderr, "parse_packet: truncated IPv4 packet (expected at least 20 bytes)\n");
+		fprintf(stderr, "parse_packet: truncated IPv4 packet (expected at least 20 bytes)\n");
 		return (1);
 	}
 
 	reply->ip = (struct iphdr *)reply->buffer;
+	iph_size = reply->ip->ihl * 4;
 	ip_tot_len = ntohs(reply->ip->tot_len);
+
+	if (ip_tot_len <= iph_size)
+	{
+		fprintf(stderr, "parse_packet: IPv4 total length < IPv4 header length\n");
+		return (1);
+	}
 
 	if ((size_t)reply->bytes_received < ip_tot_len)
 	{
-		if (ping->options.verbose)
-			fprintf(stderr, "parse_packet: received %ld bytes, expected %d\n", reply->bytes_received, ip_tot_len);
+		fprintf(stderr, "parse_packet: received %ld bytes, expected %d\n", reply->bytes_received, ip_tot_len);
 		return (1);
 	}
 
 	if (reply->ip->version != 4)
 	{
-		if (ping->options.verbose)
-			fprintf(stderr, "parse_packet: unsupported IP version (expected IPv4)\n");
+		fprintf(stderr, "parse_packet: unsupported IP version (expected IPv4)\n");
 		return (1);
 	}
 
 	if (reply->ip->protocol != IPPROTO_ICMP)
 	{
-		if (ping->options.verbose)
-			fprintf(stderr, "parse_packet: IP protocol must be ICMP");
+		fprintf(stderr, "parse_packet: IP protocol must be ICMP");
 		return (1);
 	}
 
-	iph_size = reply->ip->ihl * 4;
-
 	if (iph_size < 20 || iph_size > 60)
 	{
-		if (ping->options.verbose)
-			fprintf(stderr, "parse_packet: invalid IPv4 header length\n");
+		fprintf(stderr, "parse_packet: invalid IPv4 header length\n");
 		return (1);
 	}
 
 	if (reply->bytes_received < iph_size)
 	{
-		if (ping->options.verbose)
-			fprintf(stderr, "parse_packet: truncated IPv4 header\n");
+		fprintf(stderr, "parse_packet: truncated IPv4 header\n");
 		return (1);
 	}
 
 	if ((reply->bytes_received - iph_size) < 8)
 	{
-		if (ping->options.verbose)
-			fprintf(stderr, "parse_packet: truncated ICMP header\n");
+		fprintf(stderr, "parse_packet: truncated ICMP header\n");
 		return (1);
 	}
 
@@ -151,8 +131,7 @@ int	parse_packet(t_ping *ping, t_reply *reply)
 
 	if (inet_ntop(AF_INET, &reply->ip->saddr, reply->src_ip, INET_ADDRSTRLEN) == NULL)
 	{
-		if (ping->options.verbose)
-			perror("inet_ntop in parse_packet");
+		perror("inet_ntop in parse_packet");
 		return (1);
 	}
 
@@ -163,6 +142,7 @@ t_validate_reply	validate_reply(t_ping *ping, t_reply *reply)
 {
 	size_t icmp_len;
 	uint16_t checksum;
+	struct iphdr *inner_ip;
 	struct icmphdr *inner_icmp;
 
 	if (reply->icmp->type == ICMP_ECHOREPLY)
@@ -178,8 +158,7 @@ t_validate_reply	validate_reply(t_ping *ping, t_reply *reply)
 
 		if (checksum != 0)
 		{
-			if (ping->options.verbose)
-				fprintf(stderr, "validate_reply: invalid checksum\n");
+			fprintf(stderr, "validate_reply: invalid checksum\n");
 			return (INVALID_CHECKSUM);
 		}
 
@@ -188,7 +167,7 @@ t_validate_reply	validate_reply(t_ping *ping, t_reply *reply)
 
 	if (reply->icmp->type == ICMP_DEST_UNREACH || reply->icmp->type == ICMP_TIME_EXCEEDED)
 	{
-		if (get_inner_icmp(reply, &inner_icmp))
+		if (get_inner_ip_icmp(reply, &inner_ip, &inner_icmp))
 			return (NOT_OUR_REPLY);
 
 		if (inner_icmp->type != ICMP_ECHO)
@@ -200,7 +179,7 @@ t_validate_reply	validate_reply(t_ping *ping, t_reply *reply)
 		if (ntohs(inner_icmp->un.echo.sequence) != ping->packet.sequence)
 			return (NOT_OUR_REPLY);
 
-		report_icmp_error(reply, inner_icmp);
+		report_icmp_error(ping, reply, inner_ip, inner_icmp);
 
 		return (ICMP_ERROR_PACKET);
 	}
@@ -208,9 +187,8 @@ t_validate_reply	validate_reply(t_ping *ping, t_reply *reply)
 	return (NOT_OUR_REPLY);
 }
 
-int	get_inner_icmp(t_reply *reply, struct icmphdr **inner_icmp)
+int	get_inner_ip_icmp(t_reply *reply, struct iphdr **inner_ip, struct icmphdr **inner_icmp)
 {
-	struct iphdr *inner_ip;
 	size_t outer_ip_len;
 	size_t outer_icmp_len;
 	size_t inner_ip_len;
@@ -221,15 +199,15 @@ int	get_inner_icmp(t_reply *reply, struct icmphdr **inner_icmp)
 	if (outer_icmp_len < sizeof(struct iphdr) + sizeof(struct icmphdr))
 		return (1);
 
-	inner_ip = (struct iphdr *)(unsigned char *)reply->icmp + sizeof(struct icmphdr);
+	*inner_ip = (struct iphdr *)(unsigned char *)reply->icmp + sizeof(struct icmphdr);
 
-	if (inner_ip->version != 4)
+	if ((*inner_ip)->version != 4)
 		return (1);
 
-	if (inner_ip->protocol != IPPROTO_ICMP)
+	if ((*inner_ip)->protocol != IPPROTO_ICMP)
 		return (1);
 
-	inner_ip_len = inner_ip->ihl * 4;
+	inner_ip_len = (*inner_ip)->ihl * 4;
 
 	if (inner_ip_len < 20 || inner_ip_len > 60)
 		return (1);
@@ -242,27 +220,43 @@ int	get_inner_icmp(t_reply *reply, struct icmphdr **inner_icmp)
 	return (0);
 }
 
-void	report_icmp_error(t_reply *reply, struct icmphdr *inner_icmp)
+void	report_icmp_error(t_ping *ping, t_reply *reply, struct iphdr *inner_ip, struct icmphdr *inner_icmp)
 {
 	int type;
 	int code;
 	int seq;
 	const char *message;
-	
+
 	type = reply->icmp->type;
 	code = reply->icmp->code;
 	seq = ntohs(inner_icmp->un.echo.sequence);
-	
+
 	message = get_icmp_error_message(type, code);
-	
+
 	if (message)
+	{
 		printf("From (%s) icmp_seq=%d %s\n", reply->src_ip, seq, message);
+		if (ping->options.verbose)
+			print_inner_ip_icmp(inner_ip, inner_icmp);
+	}
 	else if (type == ICMP_DEST_UNREACH)
+	{
 		printf("From (%s) icmp_seq=%d Unknown Destination-Unreachable Code: %d\n", reply->src_ip, seq, code);
+		if (ping->options.verbose)
+			print_inner_ip_icmp(inner_ip, inner_icmp);
+	}
 	else if (type == ICMP_TIME_EXCEEDED)
+	{
 		printf("From (%s) icmp_seq=%d Unknown Time-Exceeded Code: %d\n", reply->src_ip, seq, code);
+		if (ping->options.verbose)
+			print_inner_ip_icmp(inner_ip, inner_icmp);
+	}
 	else
+	{
 		printf("From (%s) icmp_seq=%d Unknown ICMP Type Error; type(%d) code(%d)\n", reply->src_ip, seq, type, code);
+		if (ping->options.verbose)
+			print_inner_ip_icmp(inner_ip, inner_icmp);
+	}
 }
 
 const char	*get_icmp_error_message(int type, int code)
@@ -276,4 +270,25 @@ const char	*get_icmp_error_message(int type, int code)
 	}
 
 	return NULL;
+}
+
+void	print_inner_ip_icmp(struct iphdr *inner_ip, struct icmphdr *inner_icmp)
+{
+	char src_addr[INET_ADDRSTRLEN];
+	char dst_addr[INET_ADDRSTRLEN];
+
+	if (inet_ntop(AF_INET, &inner_ip->saddr, src_addr, INET_ADDRSTRLEN) == NULL)
+	{
+		perror("inet_ntop in print_inner_ip_icmp");
+		return;
+	}
+	
+	if (inet_ntop(AF_INET, &inner_ip->daddr, dst_addr, INET_ADDRSTRLEN) == NULL)
+	{
+		perror("inet_ntop in print_inner_ip_icmp");
+		return;
+	}
+
+	printf("Original IP >>> source (%s), destination (%s), protocol (%u), ttl (%u)\n", src_addr, dst_addr, inner_ip->protocol, inner_ip->ttl);
+	printf("Original ICMP >>> type (%u), code (%u), id (%u), sequence (%u)\n", inner_icmp->type, inner_icmp->code, ntohs(inner_icmp->un.echo.id), ntohs(inner_icmp->un.echo.sequence));
 }
