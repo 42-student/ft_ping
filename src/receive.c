@@ -1,5 +1,52 @@
 #include "../include/ft_ping.h"
 
+struct icmp_error_message
+{
+	int			type;
+	int			code;
+	const char 	*message;
+};
+
+static const struct icmp_error_message icmp_errors[] = {
+	{ ICMP_DEST_UNREACH, ICMP_NET_UNREACH, "Destination Network Unreachable" },
+
+	{ ICMP_DEST_UNREACH, ICMP_HOST_UNREACH, "Destination Host Unreachable" },
+
+	{ ICMP_DEST_UNREACH, ICMP_PROT_UNREACH, "Destination Protocol Unreachable" },
+
+	{ ICMP_DEST_UNREACH, ICMP_PORT_UNREACH, "Destination Port Unreachable" },
+
+	{ ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED, "Destination Fragmentation Needed And DF Set" },
+
+	{ ICMP_DEST_UNREACH, ICMP_SR_FAILED, "Destination Source Route Failed" },
+
+	{ ICMP_DEST_UNREACH, ICMP_NET_UNKNOWN, "Destination Network Unknown" },
+
+	{ ICMP_DEST_UNREACH, ICMP_HOST_UNKNOWN, "Destination Host Unknown" },
+
+	{ ICMP_DEST_UNREACH, ICMP_HOST_ISOLATED, "Destination Source Host Isolated" },
+
+	{ ICMP_DEST_UNREACH, ICMP_NET_ANO, "Destination Network Administratively Prohibited" },
+
+	{ ICMP_DEST_UNREACH, ICMP_HOST_ANO, "Destination Host Administratively Prohibited" },
+
+	{ ICMP_DEST_UNREACH, ICMP_NET_UNR_TOS, "Destination Network Unreachable For TOS" },
+
+	{ ICMP_DEST_UNREACH, ICMP_HOST_UNR_TOS, "Destination Host Unreachable For TOS" },
+
+	{ ICMP_DEST_UNREACH, ICMP_PKT_FILTERED, "Destination Communication Administratively Prohibited" },
+
+	{ ICMP_DEST_UNREACH, ICMP_PREC_VIOLATION, "Destination Host Precedence Violation" },
+
+	{ ICMP_DEST_UNREACH, ICMP_PREC_CUTOFF, "Destination Precedence Cutoff In Effect" },
+
+	/* ... */
+
+	{ ICMP_TIME_EXCEEDED, ICMP_EXC_TTL, "Time To Live Exceeded In Transit" },
+
+	{ ICMP_TIME_EXCEEDED, ICMP_EXC_FRAGTIME, "Fragment Reassembly Time Exceeded" },
+};
+
 t_receive_result	receive_packet(t_ping *ping, t_reply *reply, struct timeval *timeout)
 {
 	fd_set readfds;
@@ -197,98 +244,36 @@ int	get_inner_icmp(t_reply *reply, struct icmphdr **inner_icmp)
 
 void	report_icmp_error(t_reply *reply, struct icmphdr *inner_icmp)
 {
-	if (reply->icmp->type == ICMP_DEST_UNREACH)
-	{
-		switch (reply->icmp->code)
-		{
-			case ICMP_NET_UNREACH:
-				printf("From (%s) icmp_seq=%d Destination Network Unreachable\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence));
-				break;
-
-			case ICMP_HOST_UNREACH:
-				printf("From (%s) icmp_seq=%d Destination Host Unreachable\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence));
-				break;
-
-			case ICMP_PROT_UNREACH:
-				printf("From (%s) icmp_seq=%d Destination Protocol Unreachable\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence));
-				break;
-
-			case ICMP_PORT_UNREACH:
-				printf("From (%s) icmp_seq=%d Destination Port Unreachable\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence));
-				break;
-
-			case ICMP_FRAG_NEEDED:
-				printf("From (%s) icmp_seq=%d Destination Fragmentation Needed And DF Set\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence));
-				break;
-
-			case ICMP_SR_FAILED:
-				printf("From (%s) icmp_seq=%d Destination Source Route Failed\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence));
-				break;
-
-			case ICMP_NET_UNKNOWN:
-				printf("From (%s) icmp_seq=%d Destination Network Unknown\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence));
-				break;
-
-			case ICMP_HOST_UNKNOWN:
-				printf("From (%s) icmp_seq=%d Destination Host Unknown\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence));
-				break;
-
-			case ICMP_HOST_ISOLATED:
-				printf("From (%s) icmp_seq=%d Destination Source Host Isolated\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence));
-				break;
-
-			case ICMP_NET_ANO:
-				printf("From (%s) icmp_seq=%d Destination Network Administratively Prohibited\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence));
-				break;
-
-			case ICMP_HOST_ANO:
-				printf("From (%s) icmp_seq=%d Destination Host Administratively Prohibited\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence));
-				break;
-
-			case ICMP_NET_UNR_TOS:
-				printf("From (%s) icmp_seq=%d Destination Network Unreachable For TOS\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence));
-				break;
-
-			case ICMP_HOST_UNR_TOS:
-				printf("From (%s) icmp_seq=%d Destination Host Unreachable For TOS\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence));
-				break;
-
-			case ICMP_PKT_FILTERED:
-				printf("From (%s) icmp_seq=%d Destination Communication Administratively Prohibited\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence));
-				break;
-
-			case ICMP_PREC_VIOLATION:
-				printf("From (%s) icmp_seq=%d Destination Host Precedence Violation\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence));
-				break;
-
-			case ICMP_PREC_CUTOFF:
-				printf("From (%s) icmp_seq=%d Destination Precedence Cutoff In Effect\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence));
-				break;
-
-			default:
-				printf("From (%s) icmp_seq=%d Unknown Destination-Unreachable Code: %d\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence), reply->icmp->code);
-				break;
-		}
-	}
-	else if (reply->icmp->type == ICMP_TIME_EXCEEDED)
-	{
-		switch (reply->icmp->code)
-		{
-			case ICMP_EXC_TTL:
-				printf("From (%s) icmp_seq=%d Time To Live Exceeded In Transit\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence));
-				break;
-
-			case ICMP_EXC_FRAGTIME:
-				printf("From (%s) icmp_seq=%d Fragment Reassembly Time Exceeded\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence));
-				break;
-
-			default:
-				printf("From (%s) icmp_seq=%d Unknown Time-Exceeded Code: %d\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence), reply->icmp->code);
-				break;
-		}
-	}
+	int type;
+	int code;
+	int seq;
+	const char *message;
+	
+	type = reply->icmp->type;
+	code = reply->icmp->code;
+	seq = ntohs(inner_icmp->un.echo.sequence);
+	
+	message = get_icmp_error_message(type, code);
+	
+	if (message)
+		printf("From (%s) icmp_seq=%d %s\n", reply->src_ip, seq, message);
+	else if (type == ICMP_DEST_UNREACH)
+		printf("From (%s) icmp_seq=%d Unknown Destination-Unreachable Code: %d\n", reply->src_ip, seq, code);
+	else if (type == ICMP_TIME_EXCEEDED)
+		printf("From (%s) icmp_seq=%d Unknown Time-Exceeded Code: %d\n", reply->src_ip, seq, code);
 	else
+		printf("From (%s) icmp_seq=%d Unknown ICMP Type Error; type(%d) code(%d)\n", reply->src_ip, seq, type, code);
+}
+
+const char	*get_icmp_error_message(int type, int code)
+{
+	size_t i;
+
+	for (i = 0; i < sizeof(icmp_errors) / sizeof(icmp_errors[0]); i++)
 	{
-		printf("From (%s) icmp_seq=%d Unknown ICMP Type Error; type(%d) code(%d)\n", reply->src_ip, ntohs(inner_icmp->un.echo.sequence), reply->icmp->type, reply->icmp->code);
+		if (icmp_errors[i].type == type && icmp_errors[i].code == code)
+			return icmp_errors[i].message;
 	}
+
+	return NULL;
 }

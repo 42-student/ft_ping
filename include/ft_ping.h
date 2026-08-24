@@ -125,6 +125,7 @@ int					parse_packet(t_ping *ping, t_reply *reply);
 t_validate_reply	validate_reply(t_ping *ping, t_reply *reply);
 int					get_inner_icmp(t_reply *reply, struct icmphdr **inner_icmp);
 void				report_icmp_error(t_reply *reply, struct icmphdr *inner_icmp);
+const char			*get_icmp_error_message(int type, int code);
 
 //			signals.c
 int					setup_signal_handler(void);
