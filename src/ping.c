@@ -56,7 +56,8 @@ t_ping_reply	ft_ping(t_ping *ping, t_reply *reply)
 
 	update_stats(ping, rtt_us);
 
-	print_reply(ping, reply, rtt_us);
+	if (ping->options.quiet == false)
+		print_reply(ping, reply, rtt_us);
 
 	return (PING_SUCCESS);
 }

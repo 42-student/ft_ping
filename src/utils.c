@@ -72,6 +72,7 @@ void	print_usage(void)
 	printf("   ft_ping [-v] <destination>                 Verbose output.\n");
 	printf("   ft_ping [-?] [-h] [--help]                 Show this help message.\n");
 	printf("   ft_ping [--ttl=<value>] <destination>      Set IP time-to-live (1-255).\n");
+	printf("   ft_ping [-q] [--quiet]                     Quiet output.\n");
 }
 
 void	print_header(t_ping *ping)

@@ -47,6 +47,8 @@ int	parse_options(t_ping *ping, int argc, char **argv, int *dest_index)
 
 		if (strcmp(argv[i], "-v") == 0)
 			ping->options.verbose = true;
+		else if (strcmp(argv[i], "-q") == 0 || strcmp(argv[i], "--quiet") == 0)
+			ping->options.quiet = true;
 		else if (strcmp(argv[i], "-?") == 0 || strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0)
 			ping->options.help = true;
 		else if (strncmp(argv[i], "--ttl=", 6) == 0)
