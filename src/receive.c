@@ -224,36 +224,37 @@ void	report_icmp_error(t_ping *ping, t_reply *reply, struct iphdr *inner_ip, str
 {
 	int type;
 	int code;
+	size_t icmp_bytes_received;
 	const char *message;
 
 	type = reply->icmp->type;
 	code = reply->icmp->code;
-
+	icmp_bytes_received = reply->bytes_received - (reply->ip->ihl * 4);
 	message = get_icmp_error_message(type, code);
 
 	if (message)
 	{
-		printf("%zd bytes from %s: %s\n", reply->bytes_received, reply->src_ip, message);
+		printf("%zd bytes from %s: %s\n", icmp_bytes_received, reply->src_ip, message);
 		if (ping->options.verbose)
-			print_inner_ip_icmp(inner_ip, inner_icmp);
+			print_verbose_icmp_error(inner_ip, inner_icmp);
 	}
 	else if (type == ICMP_DEST_UNREACH)
 	{
-		printf("%zd bytes from %s: Unknown Destination-Unreachable Code: %d\n", reply->bytes_received, reply->src_ip, code);
+		printf("%zd bytes from %s: Unknown Destination-Unreachable Code: %d\n", icmp_bytes_received, reply->src_ip, code);
 		if (ping->options.verbose)
-			print_inner_ip_icmp(inner_ip, inner_icmp);
+			print_verbose_icmp_error(inner_ip, inner_icmp);
 	}
 	else if (type == ICMP_TIME_EXCEEDED)
 	{
-		printf("%zd bytes from %s: Unknown Time-Exceeded Code: %d\n", reply->bytes_received, reply->src_ip, code);
+		printf("%zd bytes from %s: Unknown Time-Exceeded Code: %d\n", icmp_bytes_received, reply->src_ip, code);
 		if (ping->options.verbose)
-			print_inner_ip_icmp(inner_ip, inner_icmp);
+			print_verbose_icmp_error(inner_ip, inner_icmp);
 	}
 	else
 	{
-		printf("%zd bytes from %s: Unknown ICMP Type Error; type(%d) code(%d)\n", reply->bytes_received, reply->src_ip, type, code);
+		printf("%zd bytes from %s: Unknown ICMP Type Error; type(%d) code(%d)\n", icmp_bytes_received, reply->src_ip, type, code);
 		if (ping->options.verbose)
-			print_inner_ip_icmp(inner_ip, inner_icmp);
+			print_verbose_icmp_error(inner_ip, inner_icmp);
 	}
 }
 
@@ -268,25 +269,4 @@ const char	*get_icmp_error_message(int type, int code)
 	}
 
 	return NULL;
-}
-
-void	print_inner_ip_icmp(struct iphdr *inner_ip, struct icmphdr *inner_icmp)
-{
-	char src_addr[INET_ADDRSTRLEN];
-	char dst_addr[INET_ADDRSTRLEN];
-
-	if (inet_ntop(AF_INET, &inner_ip->saddr, src_addr, INET_ADDRSTRLEN) == NULL)
-	{
-		perror("inet_ntop in print_inner_ip_icmp");
-		return;
-	}
-	
-	if (inet_ntop(AF_INET, &inner_ip->daddr, dst_addr, INET_ADDRSTRLEN) == NULL)
-	{
-		perror("inet_ntop in print_inner_ip_icmp");
-		return;
-	}
-
-	printf("Original IP >>> source (%s), destination (%s), protocol (%u), ttl (%u)\n", src_addr, dst_addr, inner_ip->protocol, inner_ip->ttl);
-	printf("Original ICMP >>> type (%u), code (%u), id (%u), sequence (%u)\n", inner_icmp->type, inner_icmp->code, ntohs(inner_icmp->un.echo.id), ntohs(inner_icmp->un.echo.sequence));
 }

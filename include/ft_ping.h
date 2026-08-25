@@ -126,7 +126,6 @@ t_validate_reply	validate_reply(t_ping *ping, t_reply *reply);
 int					get_inner_ip_icmp(t_reply *reply, struct iphdr **inner_ip, struct icmphdr **inner_icmp);
 void				report_icmp_error(t_ping *ping, t_reply *reply, struct iphdr *inner_ip, struct icmphdr *inner_icmp);
 const char			*get_icmp_error_message(int type, int code);
-void				print_inner_ip_icmp(struct iphdr *inner_ip, struct icmphdr *inner_icmp);
 
 //			signals.c
 int					setup_signal_handler(void);
@@ -140,5 +139,6 @@ void				print_usage(void);
 void				print_header(t_ping *ping);
 void				print_reply(t_ping *ping, t_reply *reply, int64_t rtt_us);
 void				print_stats(t_ping *ping);
+void				print_verbose_icmp_error(struct iphdr *ip, struct icmphdr *icmp);
 
 #endif

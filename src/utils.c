@@ -99,9 +99,55 @@ void	print_stats(t_ping *ping)
 	double loss_percentage = ((double)(ping->stats.transmitted - ping->stats.received) / (double)ping->stats.transmitted) * 100;
 
 	if (ping->stats.received == 0)
-		printf("--- %s ping statistics ---\n%" PRIu64 " packets transmitted, %" PRIu64 " packets received, %.f%% packet loss\n", 
+		printf("--- %s ping statistics ---\n%" PRIu64 " packets transmitted, %" PRIu64 " packets received, %.f%% packet loss\n",
 			ping->destination.hostname, ping->stats.transmitted, ping->stats.received, loss_percentage);
 	else
-		printf("--- %s ping statistics ---\n%" PRIu64 " packets transmitted, %" PRIu64 " packets received, %.f%% packet loss\nround-trip min/avg/max = %.3f/%.3f/%.3f ms\n", 
+		printf("--- %s ping statistics ---\n%" PRIu64 " packets transmitted, %" PRIu64 " packets received, %.f%% packet loss\nround-trip min/avg/max = %.3f/%.3f/%.3f ms\n",
 			ping->destination.hostname, ping->stats.transmitted, ping->stats.received, loss_percentage, min_rtt_ms, (total_rtt_ms / ping->stats.received), max_rtt_ms);
+}
+
+void	print_verbose_icmp_error(struct iphdr *ip, struct icmphdr *icmp)
+{
+	unsigned char *raw;
+	int header_len;
+	size_t icmp_size;
+	char src_addr[INET_ADDRSTRLEN];
+	char dst_addr[INET_ADDRSTRLEN];
+
+	if (inet_ntop(AF_INET, &ip->saddr, src_addr, INET_ADDRSTRLEN) == NULL)
+	{
+		perror("inet_ntop in print_verbose_icmp_error");
+		return;
+	}
+
+	if (inet_ntop(AF_INET, &ip->daddr, dst_addr, INET_ADDRSTRLEN) == NULL)
+	{
+		perror("inet_ntop in print_verbose_icmp_error");
+		return;
+	}
+
+	printf("IP Hdr Dump:\n");
+
+	raw = (unsigned char *)ip;
+	header_len = ip->ihl * 4;
+
+	printf(" ");
+	for (int i = 0; i < header_len; i += 2)
+	{
+		printf("%02x%02x", raw[i], raw[i + 1]);
+
+		if (i + 2 < header_len)
+			printf(" ");
+	}
+	printf("\n");
+
+	printf("Vr HL TOS  Len   ID Flg  off TTL Pro  cks      Src      Dst     Data\n");
+
+	printf(" %u  %u  %02x %04x %04x   %u %04x  %02x  %02x %04x %s  %s\n",
+		ip->version, ip->ihl, ip->tos, ntohs(ip->tot_len), ntohs(ip->id), ntohs(ip->frag_off) >> 13, ntohs(ip->frag_off) & 0x1fff, ip->ttl, ip->protocol, ntohs(ip->check), src_addr, dst_addr);
+
+	icmp_size = ntohs(ip->tot_len) - (ip->ihl * 4);
+
+	printf("ICMP: type %u, code %u, size %zd, id 0x%04x, seq 0x%04x\n",
+		icmp->type, icmp->code, icmp_size, ntohs(icmp->un.echo.id), ntohs(icmp->un.echo.sequence));
 }
