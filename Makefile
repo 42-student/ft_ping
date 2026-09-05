@@ -29,6 +29,9 @@ $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) -o $@ $(OBJS)
 	@echo "$(GREEN)>>>>>> Built $(NAME) <<<<<<$(RESET)"
 
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
 clean:
 	@$(RM) $(OBJS)
 	@echo "$(CYAN)>>>>>> Cleaning <<<<<<$(RESET)"

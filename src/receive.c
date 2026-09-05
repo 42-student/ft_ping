@@ -222,8 +222,8 @@ int	get_inner_ip_icmp(t_reply *reply, struct iphdr **inner_ip, struct icmphdr **
 
 void	report_icmp_error(t_ping *ping, t_reply *reply, struct iphdr *inner_ip, struct icmphdr *inner_icmp)
 {
-	int type;
-	int code;
+	unsigned int type;
+	unsigned int code;
 	size_t icmp_bytes_received;
 	const char *message;
 

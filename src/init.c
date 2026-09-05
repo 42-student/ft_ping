@@ -21,6 +21,13 @@ int	init_ping(t_ping *ping, int argc, char **argv)
 		return (1);
 	}
 
+	if (dest_index >= argc)
+	{
+		fprintf(stderr, "ft_ping: missing host operand\n");
+		fprintf(stderr, "Try 'ping --help' for more information.\n");
+		return (1);
+	}
+
 	ping->destination.hostname = argv[dest_index];
 	ping->packet.identifier = getpid();
 

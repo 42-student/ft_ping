@@ -97,7 +97,10 @@ void	print_stats(t_ping *ping)
 	double min_rtt_ms = (double)ping->stats.min_rtt / 1000.0;
 	double max_rtt_ms = (double)ping->stats.max_rtt / 1000.0;
 	double total_rtt_ms = (double)ping->stats.total_rtt / 1000.0;
-	double loss_percentage = ((double)(ping->stats.transmitted - ping->stats.received) / (double)ping->stats.transmitted) * 100;
+	double loss_percentage = 0.0;
+
+	if (ping->stats.transmitted > 0)
+        loss_percentage = ((double)(ping->stats.transmitted - ping->stats.received) / (double)ping->stats.transmitted) * 100.0;
 
 	if (ping->stats.received == 0)
 		printf("--- %s ping statistics ---\n%" PRIu64 " packets transmitted, %" PRIu64 " packets received, %.f%% packet loss\n",
