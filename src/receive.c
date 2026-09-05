@@ -144,6 +144,15 @@ t_validate_reply	validate_reply(t_ping *ping, t_reply *reply)
 	uint16_t checksum;
 	struct iphdr *inner_ip;
 	struct icmphdr *inner_icmp;
+	
+	icmp_len = reply->bytes_received - (reply->ip->ihl * 4);
+	checksum = calculate_checksum(reply->icmp, icmp_len);
+
+	if (checksum != 0)
+	{
+		fprintf(stderr, "validate_reply: invalid checksum\n");
+		return (INVALID_CHECKSUM);
+	}
 
 	if (reply->icmp->type == ICMP_ECHOREPLY)
 	{
@@ -152,15 +161,6 @@ t_validate_reply	validate_reply(t_ping *ping, t_reply *reply)
 
 		if (ntohs(reply->icmp->un.echo.sequence) != ping->packet.sequence)
 			return (NOT_OUR_REPLY);
-		
-		icmp_len = reply->bytes_received - (reply->ip->ihl * 4);
-		checksum = calculate_checksum(reply->icmp, icmp_len);
-
-		if (checksum != 0)
-		{
-			fprintf(stderr, "validate_reply: invalid checksum\n");
-			return (INVALID_CHECKSUM);
-		}
 
 		return (VALID_REPLY);
 	}
