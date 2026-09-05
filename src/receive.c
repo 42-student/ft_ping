@@ -85,27 +85,9 @@ int	parse_packet(t_reply *reply)
 	iph_size = reply->ip->ihl * 4;
 	ip_tot_len = ntohs(reply->ip->tot_len);
 
-	if (ip_tot_len <= iph_size)
-	{
-		fprintf(stderr, "parse_packet: IPv4 total length < IPv4 header length\n");
-		return (1);
-	}
-
-	if ((size_t)reply->bytes_received < ip_tot_len)
-	{
-		fprintf(stderr, "parse_packet: received %ld bytes, expected %d\n", reply->bytes_received, ip_tot_len);
-		return (1);
-	}
-
 	if (reply->ip->version != 4)
 	{
 		fprintf(stderr, "parse_packet: unsupported IP version (expected IPv4)\n");
-		return (1);
-	}
-
-	if (reply->ip->protocol != IPPROTO_ICMP)
-	{
-		fprintf(stderr, "parse_packet: IP protocol must be ICMP");
 		return (1);
 	}
 
@@ -118,6 +100,24 @@ int	parse_packet(t_reply *reply)
 	if (reply->bytes_received < iph_size)
 	{
 		fprintf(stderr, "parse_packet: truncated IPv4 header\n");
+		return (1);
+	}
+
+	if (ip_tot_len <= iph_size)
+	{
+		fprintf(stderr, "parse_packet: IPv4 total length < IPv4 header length\n");
+		return (1);
+	}
+
+	if ((size_t)reply->bytes_received < ip_tot_len)
+	{
+		fprintf(stderr, "parse_packet: received %ld bytes, expected %d\n", reply->bytes_received, ip_tot_len);
+		return (1);
+	}
+
+	if (reply->ip->protocol != IPPROTO_ICMP)
+	{
+		fprintf(stderr, "parse_packet: IP protocol must be ICMP");
 		return (1);
 	}
 
