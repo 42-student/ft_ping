@@ -136,6 +136,16 @@ int	create_socket(t_ping *ping)
 		return (1);
 	}
 
+	int broadcast = 1;
+
+	if (setsockopt(ping->socket.fd, SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(broadcast)) < 0)
+	{
+		perror("setsockopt SO_BROADCAST");
+		close(ping->socket.fd);
+		ping->socket.is_open = false;
+		return (1);
+	}
+
 	if (ping->options.ttl)
 	{
 		if (setsockopt(ping->socket.fd, IPPROTO_IP, IP_TTL, &ping->options.ttl, sizeof(ping->options.ttl)) == -1)
