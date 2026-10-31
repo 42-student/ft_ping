@@ -265,8 +265,8 @@ const char	*get_icmp_error_message(int type, int code)
 	for (i = 0; i < sizeof(icmp_errors) / sizeof(icmp_errors[0]); i++)
 	{
 		if (icmp_errors[i].type == type && icmp_errors[i].code == code)
-			return icmp_errors[i].message;
+			return (icmp_errors[i].message);
 	}
 
-	return NULL;
+	return (NULL);
 }
