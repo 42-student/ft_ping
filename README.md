@@ -53,3 +53,35 @@ The project focuses on low-level network programming, socket management, packet 
 Raw sockets generally require elevated privileges.
 
 ---
+
+## Installation
+Clone the repository and compile the project
+```bash
+git clone git@github.com:42-student/ft_ping.git
+cd ft_ping
+make
+```
+
+---
+
+## Usage
+Run the program with an IPv4 address or hostname
+```bash
+//IPv4
+sudo ./ft_ping 8.8.8.8
+
+//hostname
+sudo ./ft_ping google.com
+```
+
+---
+
+## Available options
+| Option        | Description                                                                    |
+|---------------|--------------------------------------------------------------------------------|
+| -? -h --help  | display usage information                                                      |
+| -v            | enable verbose output, including packet diagnostics and ICMP error information |
+| --ttl=value   | set the IPv4 Time To Live (TTL) value                                          |
+| -q --quiet    | suppresses the individual “reply” lines, quiet mode                            |
+
+---
