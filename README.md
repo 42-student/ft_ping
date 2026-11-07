@@ -192,3 +192,78 @@ For ICMP error packets, the diagnostic output includes:
 The output is designed to follow the formatting of the inetutils-2.0 reference implementation.
 
 ---
+
+## Learning Objectives
+This project provided an opportunity to explore several networking concepts and low-level programming techniques:
+
+* IPv4 networking fundamentals
+
+* ICMP protocol and packet structure
+
+* Raw socket programming in C
+
+* Network byte-order and byte-order conversions
+
+* Internet checksum calculation
+
+* IPv4 and ICMP packet parsing
+
+* DNS resolution
+
+* ICMP error messages and embedded packet inspection
+
+* Socket timeouts using select()
+
+* RTT calculations and packet statistics
+
+* Signal handling and graceful termination
+
+* Debugging network traffic with tcpdump and strace
+
+---
+
+## Reference
+* inetutils-2.0
+
+* RFC 792 – Internet Control Message Protocol
+
+* RFC 791 – Internet Protocol
+
+* Linux man pages
+
+---
+
+#### Developed as part of the 42 curriculum.
+
+#### This project is intended for educational purposes and is not a replacement for the system's original ping utility.
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
