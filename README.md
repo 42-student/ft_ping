@@ -86,6 +86,15 @@ sudo ./ft_ping google.com
 
 ---
 
+## Screenshot of the app
+* standard mode
+![Screenshot in standard mode](img/ft_ping.png)
+
+* verbose mode
+![Screenshot in verbose mode](img/ft_ping_v.png)
+
+---
+
 ## Technical Implementation
 
 ### Raw sockets
